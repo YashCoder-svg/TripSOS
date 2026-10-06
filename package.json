@@ -1,0 +1,29 @@
+{
+  "name": "tripsos",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "overrides": {
+    "shell-quote": "^1.12.0"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n client,server -c cyan,green \"npm:dev --workspace @tripsos/client\" \"npm:dev --workspace @tripsos/server\"",
+    "build": "npm run build --workspace @tripsos/client && npm run build --workspace @tripsos/server",
+    "lint": "npm run lint --workspace @tripsos/client && npm run lint --workspace @tripsos/server",
+    "format": "prettier --write .",
+    "typecheck": "npm run typecheck --workspace @tripsos/client && npm run typecheck --workspace @tripsos/server",
+    "test": "npm run test --workspace @tripsos/client && npm run test --workspace @tripsos/server"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.71.1",
+    "@typescript-eslint/parser": "^8.71.1",
+    "concurrently": "^10.0.5",
+    "eslint": "^9.35.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2"
+  }
+}
