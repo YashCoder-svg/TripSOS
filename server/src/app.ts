@@ -6,6 +6,7 @@ import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import { healthRoutes } from './routes/healthRoutes.js';
+import { imageRoutes } from './routes/imageRoutes.js';
 
 export const app = express();
 app.disable('x-powered-by');
@@ -36,5 +37,6 @@ app.use(
   }),
 );
 app.use('/api/health', healthRoutes);
+app.use('/api/images', imageRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
