@@ -1,6 +1,6 @@
 # TripSOS
 
-TripSOS is a travel companion for planning journeys, discovering useful local services, and staying prepared when plans change. The repository contains the **Phase 0 foundation, Phase 1 landing experience, and Phase 2 authentication/account foundation**. Trip management, live discovery, maps, and emergency response workflows are not implemented yet.
+TripSOS is a travel companion for planning journeys, discovering useful local services, and staying prepared when plans change. The repository contains the **Phase 0 foundation, Phase 1 landing experience, Phase 2 authentication/account foundation, and Phase 3 trip management**. Live discovery, maps, weather, itinerary planning, expenses, group collaboration, and emergency response workflows are not implemented yet.
 
 ## Architecture
 
@@ -9,7 +9,7 @@ client/   React single-page application (Vite)
 server/   Express JSON API (Node.js)
 ```
 
-The frontend calls application APIs through `client/src/services/apiClient.ts`; UI components should not call providers or the API directly. Backend routes, middleware, configuration, and services have separate homes under `server/src/`. The API connects to MongoDB before accepting requests. Access tokens live in frontend memory; rotating refresh tokens are stored as hashes in per-session MongoDB documents and sent to the browser only as secure, HTTP-only cookies. Emergency contacts are stored separately and returned only to their authenticated owner. Optional Unsplash photo requests are proxied by the server so the provider access key does not enter the browser bundle; curated Unsplash CDN images keep the page photographic when no key is configured.
+The frontend calls application APIs through `client/src/services/apiClient.ts`; UI components should not call providers or the API directly. Backend routes, middleware, configuration, and services have separate homes under `server/src/`. The API connects to MongoDB before accepting requests. Access tokens live in frontend memory; rotating refresh tokens are stored as hashes in per-session MongoDB documents and sent to the browser only as secure, HTTP-only cookies. Emergency contacts and trips are stored separately and returned only to their authenticated owner. Optional Unsplash photo requests are proxied by the server so the provider access key does not enter the browser bundle; curated Unsplash CDN images keep the page photographic when no key is configured.
 
 ## Technology
 
@@ -70,6 +70,88 @@ Never commit `.env` or real credentials. The example file contains development p
 - The dashboard is personalized but contains no fabricated trips. `/emergency` stays public and presents general guidance without location access or dispatch functionality.
 - Backend integration tests use `mongodb-memory-server` and download a MongoDB test binary on first run; the local application still uses the configured MongoDB server.
 
+## Trip Management (Phase 3)
+
+### Trip Domain
+
+TripSOS provides a core travel workspace where authenticated users organize their journeys. Each trip stores core itinerary boundaries (dates, travelers, budget, style, and interests) and anchors future phase workspaces (maps, day-by-day itineraries, expense splitters, and group collaboration).
+
+### Trip Data Model
+
+Trips are persisted in MongoDB via Mongoose (`Trip` model) with the following fields:
+
+| Field                     | Type                  | Required   | Description                                                                                                                        |
+| ------------------------- | --------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `_id`                     | ObjectId              | System     | Unique trip identifier                                                                                                             |
+| `owner`                   | ObjectId (ref User)   | Yes        | Authenticated user ID (indexed, never exposed to client)                                                                           |
+| `name`                    | String                | Yes        | Name of trip (1–80 characters)                                                                                                     |
+| `destinationName`         | String                | Yes        | Name/label of destination (1–120 characters)                                                                                       |
+| `destinationCountry`      | String                | Optional   | Country of destination                                                                                                             |
+| `destinationCoordinates`  | Object                | Optional   | Provider-neutral `{ latitude, longitude }`                                                                                         |
+| `destination`             | Object                | Optional   | Subdocument designed for Phase 4 provider expansion (`providerId`, `formattedAddress`, `city`, `region`, `country`, `coordinates`) |
+| `startDate`               | String (`YYYY-MM-DD`) | Yes        | Inclusive start calendar date                                                                                                      |
+| `endDate`                 | String (`YYYY-MM-DD`) | Yes        | Inclusive end calendar date (`endDate >= startDate`)                                                                               |
+| `travelerCount`           | Number                | Yes        | Positive integer between 1 and 30                                                                                                  |
+| `budget`                  | Number                | Yes        | Non-negative budget limit (up to 100,000,000)                                                                                      |
+| `currency`                | Enum                  | Yes        | ISO currency code (`INR`, `USD`, `EUR`, `GBP`)                                                                                     |
+| `travelStyle`             | Enum                  | Yes        | `budget`, `balanced`, `comfort`, `adventure`, `family`, `backpacking`                                                              |
+| `interests`               | Array of Enums        | Optional   | `nature`, `food`, `adventure`, `history`, `shopping`, `photography`, `nightlife`, `family`, `culture` (up to 9)                    |
+| `status`                  | Enum                  | Controlled | `planning`, `upcoming`, `active`, `completed`, `cancelled`                                                                         |
+| `createdAt` / `updatedAt` | Date                  | System     | Auto-managed timestamps                                                                                                            |
+
+**Indexes:**
+
+- `{ owner: 1, startDate: 1 }`: Optimizes chronological user trip feeds.
+- `{ owner: 1, status: 1 }`: Optimizes owner-scoped status queries and filtering.
+
+### Trip API Endpoints
+
+All trip endpoints require authentication (`Bearer <access-token>`) and respond with `Cache-Control: no-store`.
+
+- **`POST /api/trips`**: Creates a new trip. Validated with Zod (`createTripSchema`). Client-supplied `owner` and `status` fields are rejected. Returns `201 Created`.
+- **`GET /api/trips`**: Lists all trips belonging to the authenticated user, sorted chronologically by `startDate`.
+- **`GET /api/trips/:tripId`**: Retrieves a single trip by ID.
+- **`PATCH /api/trips/:tripId`**: Updates editable trip fields (name, dates, budget, etc.). Validates that `endDate >= startDate`. Client-supplied status is rejected here to preserve controlled transitions.
+- **`PATCH /api/trips/:tripId/status`**: Updates trip status to `planning`, `upcoming`, `active`, `completed`, or `cancelled`. Enforces ownership and enum validation.
+- **`DELETE /api/trips/:tripId`**: Deliberately removes a trip owned by the authenticated user.
+
+### Authorization Strategy
+
+- **Session Identity**: The server extracts `userId` strictly from the verified JWT access token (`req.auth.userId`). No client-supplied owner ID is trusted.
+- **Data Boundary Protection**: Every query is scoped to `{ _id: tripId, owner: req.auth.userId }`. If another user attempts to view, edit, change status of, or delete a trip they do not own, the server returns `404 Not Found`. This prevents resource enumeration and avoids leaking whether another traveler's private resource exists.
+- **Sanitized Serialization**: The internal `owner` ID is stripped prior to serialization in API responses.
+
+### Date Conventions & Timezone Safety
+
+- Dates are stored as strict ISO calendar strings in `YYYY-MM-DD` format.
+- Parsing and formatting use UTC calendar methods (`Date.UTC` and `Intl.DateTimeFormat(..., { timeZone: 'UTC' })`). This prevents dates from shifting across local timezone boundaries (e.g., UTC midnight converting to the previous calendar day).
+- **Duration Semantics**: Travel duration uses inclusive calendar day counting:
+  $$\text{Duration} = \text{round}\left(\frac{\text{Date}_{\text{end}} - \text{Date}_{\text{start}}}{86,400,000}\right) + 1$$
+  For example, 12 Oct → 16 Oct is counted and displayed as 5 travel days (12, 13, 14, 15, and 16 October).
+
+### Currency Handling
+
+- Budgets support ISO 4217 currency codes: `INR`, `USD`, `EUR`, and `GBP`.
+- Amounts are formatted in the UI using locale-aware `Intl.NumberFormat` with the stored currency code.
+- No automatic currency conversions are applied; the amount and currency are preserved exactly as entered by the traveler.
+
+### Status Derivation & Control
+
+- Trips with status `cancelled` or `planning` retain their status until updated by the user.
+- Other trips automatically derive status relative to the current local calendar day:
+  - Before `startDate`: `upcoming`
+  - Between `startDate` and `endDate`: `active`
+  - After `endDate`: `completed`
+
+### UI Screens & Navigation
+
+- `/dashboard`: Displays the nearest upcoming or active trip card with prominent CTA, or the fresh adventure empty state when no trips exist.
+- `/trips`: Categorized trip list showing Upcoming, Active, Planning, Past, and Cancelled trips, or a first-trip empty state.
+- `/trips/new`: Premium trip creation form built with React Hook Form, Zod validation, and inline feedback.
+- `/trips/:tripId`: Central trip workspace featuring a photographic hero banner, summary metrics, travel readiness indicators, status cancel/restore actions, and tabs (Overview, Map, Itinerary, Expenses, Group) with intentional "Coming next" previews.
+- `/trips/:tripId/edit`: Reusable trip form for updating existing plans.
+- Delete modal: Accessible dialog with keyboard trapping, backdrop dismissal, and explicit confirmation to prevent accidental data loss.
+
 ## Development commands
 
 ```sh
@@ -86,7 +168,7 @@ npm test          # Frontend and backend tests
 1. Foundation and project setup (complete)
 2. Design system and landing experience (complete)
 3. Authentication and profile (complete)
-4. Trips and live dashboard data
+4. Trip management and dashboard integration (complete)
 5. Maps and real place discovery
 6. Weather
 7. Itinerary

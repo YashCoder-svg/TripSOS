@@ -1,6 +1,8 @@
 import { ArrowRight, Compass, MapPlus, ShieldCheck, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../store/AuthProvider';
+import { useTrips } from '../services/tripService';
+import { formatBudget, formatDateRange, tripDuration } from './tripUtils';
 
 function greetingForHour(hour: number): string {
   if (hour < 12) return 'Good morning';
@@ -11,6 +13,10 @@ function greetingForHour(hour: number): string {
 export function DashboardPage() {
   const { user } = useAuth();
   const greeting = greetingForHour(new Date().getHours());
+  const { data: trips = [], isLoading: tripsLoading, isError: tripsError } = useTrips();
+  const nextTrip =
+    trips.find((trip) => trip.status === 'active') ??
+    trips.find((trip) => trip.status === 'upcoming');
 
   return (
     <main className="product-page dashboard-page">
@@ -74,16 +80,55 @@ export function DashboardPage() {
                 View trips <ArrowRight size={14} />
               </Link>
             </div>
-            <div className="trip-empty-state">
-              <span className="trip-empty-icon">
-                <Compass size={24} />
-              </span>
-              <h3>Your next adventure starts here.</h3>
-              <p>Create your first trip and TripSOS will keep the details in one place.</p>
-              <Link to="/trips" className="product-text-link">
-                Create your first trip <ArrowRight size={15} />
-              </Link>
-            </div>
+            {tripsLoading ? (
+              <p className="trip-query-state" role="status">
+                Gathering your journeys…
+              </p>
+            ) : null}
+            {tripsError ? (
+              <p className="trip-query-error" role="alert">
+                Your trips could not load. <Link to="/trips">Try again</Link>
+              </p>
+            ) : null}
+            {!tripsLoading && !tripsError && nextTrip ? (
+              <article className="dashboard-next-trip">
+                <span className="eyebrow">
+                  {nextTrip.status === 'active' ? 'HAPPENING NOW' : 'NEXT ADVENTURE'}
+                </span>
+                <div className="dashboard-next-trip__main">
+                  <div>
+                    <h3>{nextTrip.destinationName}</h3>
+                    <p>{nextTrip.name}</p>
+                  </div>
+                  <Link to={`/trips/${nextTrip._id}`} aria-label={`Open ${nextTrip.name}`}>
+                    <ArrowRight size={18} />
+                  </Link>
+                </div>
+                <div className="dashboard-next-trip__facts">
+                  <span>{formatDateRange(nextTrip.startDate, nextTrip.endDate)}</span>
+                  <span>
+                    {tripDuration(nextTrip.startDate, nextTrip.endDate)} days ·{' '}
+                    {nextTrip.travelerCount} travelers
+                  </span>
+                  <strong>{formatBudget(nextTrip.budget, nextTrip.currency)}</strong>
+                </div>
+                <Link className="product-text-link" to={`/trips/${nextTrip._id}`}>
+                  Open trip <ArrowRight size={15} />
+                </Link>
+              </article>
+            ) : null}
+            {!tripsLoading && !tripsError && !nextTrip ? (
+              <div className="trip-empty-state">
+                <span className="trip-empty-icon">
+                  <Compass size={24} />
+                </span>
+                <h3>Your next adventure starts here.</h3>
+                <p>Create your first trip and TripSOS will keep the details in one place.</p>
+                <Link to="/trips/new" className="product-text-link">
+                  Create your first trip <ArrowRight size={15} />
+                </Link>
+              </div>
+            ) : null}
           </div>
           <div className="dashboard-side-stack">
             <section className="dashboard-panel recent-activity-panel">

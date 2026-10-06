@@ -14,6 +14,20 @@ const RegisterPage = lazy(() =>
 const DashboardPage = lazy(() =>
   import('../pages/DashboardPage').then((module) => ({ default: module.DashboardPage })),
 );
+const TripsPage = lazy(() =>
+  import('../pages/TripsPage').then((module) => ({ default: module.TripsPage })),
+);
+const TripDetailPage = lazy(() =>
+  import('../pages/TripDetailPage').then((module) => ({ default: module.TripDetailPage })),
+);
+const TripCreatePage = lazy(() =>
+  import('../pages/TripFormPage').then((module) => ({ default: module.TripFormPage })),
+);
+const TripEditPage = lazy(() =>
+  import('../pages/TripFormPage').then((module) => ({
+    default: () => <module.TripFormPage editing />,
+  })),
+);
 const ProfilePage = lazy(() =>
   import('../pages/ProfilePage').then((module) => ({ default: module.ProfilePage })),
 );
@@ -76,7 +90,38 @@ export const router = createBrowserRouter([
           </LazyRoute>,
         ),
       },
-      { path: '/trips', element: protect(<FoundationPage />) },
+      {
+        path: '/trips',
+        element: protect(
+          <LazyRoute>
+            <TripsPage />
+          </LazyRoute>,
+        ),
+      },
+      {
+        path: '/trips/new',
+        element: protect(
+          <LazyRoute>
+            <TripCreatePage />
+          </LazyRoute>,
+        ),
+      },
+      {
+        path: '/trips/:tripId/edit',
+        element: protect(
+          <LazyRoute>
+            <TripEditPage />
+          </LazyRoute>,
+        ),
+      },
+      {
+        path: '/trips/:tripId',
+        element: protect(
+          <LazyRoute>
+            <TripDetailPage />
+          </LazyRoute>,
+        ),
+      },
       {
         path: '/profile',
         element: protect(

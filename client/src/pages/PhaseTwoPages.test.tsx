@@ -35,6 +35,10 @@ vi.mock('../store/AuthProvider', () => ({
   useOptionalAuth: () => auth,
 }));
 
+vi.mock('../services/tripService', () => ({
+  useTrips: () => ({ data: [], isLoading: false, isError: false }),
+}));
+
 function renderAt(path: string, element: React.ReactNode) {
   return render(
     <MemoryRouter initialEntries={[path]}>
