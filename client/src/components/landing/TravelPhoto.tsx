@@ -20,7 +20,7 @@ function responsiveUrl(source: string, width: number): string {
 }
 
 function responsiveSources(source: string): string {
-  return [640, 960, 1440, 2200]
+  return [480, 640, 832, 960, 1440, 2200]
     .map((width) => `${responsiveUrl(source, width)} ${width}w`)
     .join(', ');
 }
