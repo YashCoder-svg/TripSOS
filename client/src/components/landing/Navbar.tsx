@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Compass, Menu, X } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CTAButton } from './CTAButton';
+import { useOptionalAuth } from '../../store/AuthProvider';
 
 const links = [
   { label: 'Explore', href: '#explore' },
@@ -14,7 +15,18 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const auth = useOptionalAuth();
+  const authenticated = auth?.status === 'authenticated';
   const solid = scrolled || pathname !== '/';
+  const destination = (href: string) => (pathname === '/' ? href : `/${href}`);
+  const signOut = () => {
+    if (!auth) return;
+    void auth
+      .logout()
+      .catch(() => undefined)
+      .finally(() => navigate('/'));
+  };
 
   useEffect(() => {
     const updateScroll = () => setScrolled(window.scrollY > 32);
@@ -42,17 +54,22 @@ export function Navbar() {
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
           {links.map((link) => (
-            <a href={link.href} key={link.href}>
+            <a href={destination(link.href)} key={link.href}>
               {link.label}
             </a>
           ))}
         </nav>
         <div className="nav-actions">
-          <Link className="nav-login" to="/login">
-            Login
+          <Link className="nav-login" to={authenticated ? '/profile' : '/login'}>
+            {authenticated ? 'Your profile' : 'Login'}
           </Link>
+          {authenticated && (
+            <button className="nav-logout" type="button" onClick={signOut}>
+              Sign out
+            </button>
+          )}
           <CTAButton to="/trips" className="nav-cta">
-            Plan a trip
+            {authenticated ? 'My trips' : 'Plan a trip'}
           </CTAButton>
         </div>
         <button
@@ -74,7 +91,7 @@ export function Navbar() {
         <nav aria-label="Mobile navigation">
           {links.map((link) => (
             <a
-              href={link.href}
+              href={destination(link.href)}
               key={link.href}
               tabIndex={menuOpen ? 0 : -1}
               onClick={() => setMenuOpen(false)}
@@ -82,12 +99,27 @@ export function Navbar() {
               {link.label}
             </a>
           ))}
-          <Link to="/login" tabIndex={menuOpen ? 0 : -1}>
-            Login
+          <Link to={authenticated ? '/dashboard' : '/login'} tabIndex={menuOpen ? 0 : -1}>
+            {authenticated ? 'Dashboard' : 'Login'}
           </Link>
+          {authenticated && (
+            <Link to="/profile" tabIndex={menuOpen ? 0 : -1}>
+              Your profile
+            </Link>
+          )}
           <CTAButton to="/trips" className="mobile-nav__cta">
-            Plan a trip
+            {authenticated ? 'My trips' : 'Plan a trip'}
           </CTAButton>
+          {authenticated && (
+            <button
+              className="mobile-nav__signout"
+              type="button"
+              tabIndex={menuOpen ? 0 : -1}
+              onClick={signOut}
+            >
+              Sign out
+            </button>
+          )}
         </nav>
       </div>
       {menuOpen && (

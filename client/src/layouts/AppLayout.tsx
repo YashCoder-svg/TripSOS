@@ -8,7 +8,7 @@ export function AppLayout() {
     <div className="app-shell">
       <Navbar />
       <Outlet />
-      {pathname !== '/' && (
+      {pathname !== '/' && pathname !== '/login' && pathname !== '/register' && (
         <footer className="site-footer">
           <span>Travel prepared. Stay connected.</span>
           <MapPinned size={16} />

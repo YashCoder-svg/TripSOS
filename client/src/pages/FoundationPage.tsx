@@ -27,18 +27,6 @@ import { travelPhotos } from '../services/imageService';
 import { TravelPhoto } from '../components/landing/TravelPhoto';
 
 const pageContent: Record<string, { title: string; description: string }> = {
-  '/login': {
-    title: 'Welcome back, traveler.',
-    description: 'Account access is planned for a later TripSOS phase.',
-  },
-  '/register': {
-    title: 'Make room for the journey.',
-    description: 'Account creation is planned for a later TripSOS phase.',
-  },
-  '/dashboard': {
-    title: 'Your journey, at a glance.',
-    description: 'Your trip hub is being prepared for a later phase.',
-  },
   '/trips': {
     title: 'Every trip starts somewhere.',
     description: 'Trip creation is planned for a later phase.',
@@ -47,24 +35,11 @@ const pageContent: Record<string, { title: string; description: string }> = {
     title: 'Find your way around.',
     description: 'Local discovery will connect to real place data in a later phase.',
   },
-  '/emergency': {
-    title: 'Help should be easy to reach.',
-    description:
-      'Emergency tools are not active yet. If you are in immediate danger, contact local emergency services.',
-  },
-  '/profile': {
-    title: 'Your travel profile.',
-    description: 'Profile and trusted-contact settings are planned for a later phase.',
-  },
-  '/settings': {
-    title: 'Make TripSOS yours.',
-    description: 'Preferences and account settings are planned for a later phase.',
-  },
 };
 
 export function FoundationPage() {
   const { pathname } = useLocation();
-  const content = pageContent[pathname] ?? pageContent['/dashboard']!;
+  const content = pageContent[pathname] ?? pageContent['/explore']!;
   return (
     <PageContainer>
       <div className="page-heading">
