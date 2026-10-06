@@ -147,10 +147,79 @@ All trip endpoints require authentication (`Bearer <access-token>`) and respond 
 
 - `/dashboard`: Displays the nearest upcoming or active trip card with prominent CTA, or the fresh adventure empty state when no trips exist.
 - `/trips`: Categorized trip list showing Upcoming, Active, Planning, Past, and Cancelled trips, or a first-trip empty state.
-- `/trips/new`: Premium trip creation form built with React Hook Form, Zod validation, and inline feedback.
-- `/trips/:tripId`: Central trip workspace featuring a photographic hero banner, summary metrics, travel readiness indicators, status cancel/restore actions, and tabs (Overview, Map, Itinerary, Expenses, Group) with intentional "Coming next" previews.
-- `/trips/:tripId/edit`: Reusable trip form for updating existing plans.
+- `/trips/new`: Premium trip creation form built with React Hook Form, Zod validation, and autocomplete destination search.
+- `/trips/:tripId`: Central trip workspace featuring a photographic hero banner, summary metrics, travel readiness indicators, status cancel/restore actions, functional interactive Map tab, and remaining tabs (Itinerary, Expenses, Group) with intentional "Coming next" previews.
+- `/trips/:tripId/edit`: Reusable trip form for updating existing plans and destination coordinates.
+- `/trips/:tripId/map`: Dedicated full-workspace map view.
+- `/explore`: Standalone global discovery engine allowing any traveler to search cities, explore nearby services, and view interactive maps.
 - Delete modal: Accessible dialog with keyboard trapping, backdrop dismissal, and explicit confirmation to prevent accidental data loss.
+
+## Real Maps and Place Discovery (Phase 4)
+
+### Overview
+
+TripSOS integrates real vector maps and live place intelligence without hardcoding or inventing fake place data. Travelers can search real destinations with autocomplete, inspect destinations on an interactive MapLibre GL map, discover real services (food, medical, police, ATMs, fuel, transit, repair) around their destination, and view verified provider details.
+
+### Provider Abstraction Architecture
+
+TripSOS uses a provider-agnostic architecture (`LocationProvider` interface) to decouple business logic from external API structures:
+
+```text
+External Provider (OpenStreetMap Nominatim + Overpass API / Geoapify)
+        ↓
+TripSOS Provider Adapter (server/src/services/location/providers/)
+        ↓
+Normalized Location Service & In-Memory Cache (server/src/services/location/)
+        ↓
+TripSOS REST API (/api/places/*)
+        ↓
+Client API Service & TanStack Query Hooks (client/src/services/placeService.ts)
+        ↓
+Interactive UI (MapLibreMap, TripMapWorkspace, PlaceCard, PlaceDetailDrawer)
+```
+
+- **OpenStreetMap (Default):** Uses Nominatim for geocoding and the Overpass API for structured tag-based place discovery. Works out of the box with zero required API keys.
+- **Geoapify (Adapter):** Production-ready adapter supporting Places API v2 and Geocoding API with categorized querying.
+- **Configurable Fallback:** Controlled via `LOCATION_PROVIDER=osm|geoapify`.
+
+### Map Technology
+
+- **MapLibre GL JS:** Open-source vector map rendering with high performance WebGL/WebGPU acceleration.
+- **Tile/Style Provider:** Configurable via `MAP_STYLE_URL` / `VITE_MAP_STYLE_URL`. Defaults to OpenFreeMap Liberty style (`https://tiles.openfreemap.org/styles/liberty`), providing clean vector tiles without browser-side API keys or token exposure.
+- **Lifecycle Safety:** Strict component lifecycle management in `MapLibreMap.tsx` prevents memory leaks, cleans up markers/popups on unmount, and avoids duplicate canvas contexts in React Strict Mode.
+
+### APIs Added
+
+| Method | Endpoint                                                                     | Description                                                        |
+| ------ | ---------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `GET`  | `/api/places/geocode?q={query}&limit={n}`                                    | Geocode a search term to normalized coordinates and regions        |
+| `GET`  | `/api/places/reverse?lat={lat}&lon={lon}`                                    | Reverse geocode coordinates to structured address information      |
+| `GET`  | `/api/places/search?lat={lat}&lon={lon}&q={query}&category={cat}&radius={r}` | Free-text and category search within a geographic radius           |
+| `GET`  | `/api/places/nearby?lat={lat}&lon={lon}&category={cat}&radius={r}`           | Category-based discovery around target coordinates                 |
+| `GET`  | `/api/places/:providerId`                                                    | Retrieve detailed place record including hours, phone, and website |
+
+### Supported Discovery Categories
+
+- `food`: Restaurants, cafés, vegetarian dining, eateries
+- `hotels`: Hotels, hostels, motels, guest houses
+- `hospitals`: Hospitals, clinics, emergency medical centers
+- `pharmacies`: Pharmacies and medical stores
+- `police`: Police stations and law enforcement posts
+- `atms`: ATMs and banking branches
+- `fuel`: Fuel stations and electric vehicle charging points
+- `groceries`: Supermarkets, convenience stores, grocery shops
+- `cafes`: Coffee shops and bakeries
+- `transport`: Bus stations, train stations, transit stops
+- `repair`: Automotive and bicycle repair workshops
+
+### Privacy and Security Principles
+
+1. **Explicit Geolocation Consent:** Browser location is requested only after explicit traveler interaction with an explainer dialog explaining why coordinates are needed.
+2. **Data Minimization:** Device coordinates are never stored in MongoDB or tracked continuously.
+3. **No Background Tracking:** No background geolocation watches or persistent location endpoints exist.
+4. **Provider Credential Isolation:** All provider API keys (`LOCATION_PROVIDER_API_KEY`) remain strictly on the server and are never included in API responses or client bundles.
+5. **Safe Navigation URLs:** External direction actions generate safe, sanitized navigation links opening in native Google Maps or Apple Maps without arbitrary URL execution.
+6. **No Data Mirroring:** In compliance with external provider terms, TripSOS does not create permanent database clones of place data. Temporary 5-minute memory caching is utilized exclusively for latency reduction and rate-limit conservation.
 
 ## Development commands
 
@@ -160,7 +229,7 @@ npm run build     # Production builds for both workspaces
 npm run lint      # ESLint checks
 npm run format    # Format repository files with Prettier
 npm run typecheck # Strict TypeScript checks
-npm test          # Frontend and backend tests
+npm test          # Frontend and backend tests (71 total tests)
 ```
 
 ## Planned phases
@@ -169,7 +238,7 @@ npm test          # Frontend and backend tests
 2. Design system and landing experience (complete)
 3. Authentication and profile (complete)
 4. Trip management and dashboard integration (complete)
-5. Maps and real place discovery
+5. Real maps and place discovery (Phase 4 - complete)
 6. Weather
 7. Itinerary
 8. Emergency workflows and trusted contacts
@@ -177,5 +246,3 @@ npm test          # Frontend and backend tests
 10. Offline/PWA support
 11. AI-assisted travel guidance
 12. Performance, security, accessibility, testing, and deployment hardening
-
-Trip, emergency, group, and offline panels on the landing page are explicitly labeled visual demonstrations. They do not perform live searches, access location, send messages, or persist trip data.

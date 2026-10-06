@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { AppLayout } from '../layouts/AppLayout';
-import { FoundationPage, LandingPage } from '../pages/FoundationPage';
+import { LandingPage } from '../pages/FoundationPage';
 import { ProtectedRoute, PublicOnlyRoute } from './Guards';
 
 const LoginPage = lazy(() =>
@@ -19,6 +19,12 @@ const TripsPage = lazy(() =>
 );
 const TripDetailPage = lazy(() =>
   import('../pages/TripDetailPage').then((module) => ({ default: module.TripDetailPage })),
+);
+const TripMapPage = lazy(() =>
+  import('../pages/TripMapPage').then((module) => ({ default: module.TripMapPage })),
+);
+const ExplorePage = lazy(() =>
+  import('../pages/ExplorePage').then((module) => ({ default: module.ExplorePage })),
 );
 const TripCreatePage = lazy(() =>
   import('../pages/TripFormPage').then((module) => ({ default: module.TripFormPage })),
@@ -123,6 +129,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: '/trips/:tripId/map',
+        element: protect(
+          <LazyRoute>
+            <TripMapPage />
+          </LazyRoute>,
+        ),
+      },
+      {
         path: '/profile',
         element: protect(
           <LazyRoute>
@@ -138,7 +152,14 @@ export const router = createBrowserRouter([
           </LazyRoute>,
         ),
       },
-      { path: '/explore', element: <FoundationPage /> },
+      {
+        path: '/explore',
+        element: (
+          <LazyRoute>
+            <ExplorePage />
+          </LazyRoute>
+        ),
+      },
       {
         path: '/emergency',
         element: (

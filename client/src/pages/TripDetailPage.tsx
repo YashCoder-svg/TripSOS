@@ -16,6 +16,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { travelPhotos } from '../services/imageService';
 import { useDeleteTrip, useTrip, useUpdateTripStatus } from '../services/tripService';
 import type { Trip, TripStatus } from '../types/trip';
+import { TripMapWorkspace } from '../components/places/TripMapWorkspace';
 import { formatBudget, formatDateRange, formatTripDate, tripDuration } from './tripUtils';
 
 const tabs = [
@@ -202,16 +203,11 @@ function TripOverview({ trip }: { trip: Trip }) {
   );
 }
 
-function ComingNext({ tab }: { tab: Exclude<TripTab, 'overview'> }) {
+function ComingNext({ tab }: { tab: Exclude<TripTab, 'overview' | 'map'> }) {
   const labels: Record<
-    Exclude<TripTab, 'overview'>,
+    Exclude<TripTab, 'overview' | 'map'>,
     { eyebrow: string; title: string; description: string }
   > = {
-    map: {
-      eyebrow: 'MAP',
-      title: 'A sense of place is coming.',
-      description: 'Destination mapping will be added in a future TripSOS release.',
-    },
     itinerary: {
       eyebrow: 'ITINERARY',
       title: 'Your days will take shape here.',
@@ -381,6 +377,8 @@ export function TripDetailPage() {
         >
           {selectedTab === 'overview' ? (
             <TripOverview trip={trip} />
+          ) : selectedTab === 'map' ? (
+            <TripMapWorkspace trip={trip} />
           ) : (
             <ComingNext tab={selectedTab} />
           )}

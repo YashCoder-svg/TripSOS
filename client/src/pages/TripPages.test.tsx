@@ -2,10 +2,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { Trip } from '../types/trip';
 import { TripsPage } from './TripsPage';
 import { TripDetailPage } from './TripDetailPage';
 import { TripFormPage } from './TripFormPage';
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false, gcTime: 0 } },
+});
 
 const hooks = vi.hoisted(() => ({
   trips: [] as Trip[],
@@ -46,13 +51,15 @@ const trip: Trip = {
 
 function renderTrips(path = '/trips') {
   return render(
-    <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route path="/trips" element={<TripsPage />} />
-        <Route path="/trips/:tripId" element={<TripDetailPage />} />
-        <Route path="/" element={<p>Trips home</p>} />
-      </Routes>
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[path]}>
+        <Routes>
+          <Route path="/trips" element={<TripsPage />} />
+          <Route path="/trips/:tripId" element={<TripDetailPage />} />
+          <Route path="/" element={<p>Trips home</p>} />
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>,
   );
 }
 
@@ -107,9 +114,9 @@ describe('trip pages', () => {
     renderTrips('/trips/trip-one');
     expect(await screen.findByRole('heading', { name: 'Mountain Escape' })).toBeInTheDocument();
     expect(screen.getByText('5 travel days')).toBeInTheDocument();
-    await userEvent.setup().click(screen.getByRole('tab', { name: 'Map' }));
+    await userEvent.setup().click(screen.getByRole('tab', { name: 'Itinerary' }));
     expect(
-      screen.getByRole('heading', { name: 'A sense of place is coming.' }),
+      screen.getByRole('heading', { name: 'Your days will take shape here.' }),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /edit trip/i })).toHaveAttribute(
       'href',
@@ -143,12 +150,14 @@ describe('trip pages', () => {
     hooks.trip = trip;
     hooks.updateMutateAsync.mockResolvedValue({ ...trip, name: 'A Northern Escape' });
     render(
-      <MemoryRouter initialEntries={['/trips/trip-one/edit']}>
-        <Routes>
-          <Route path="/trips/:tripId/edit" element={<TripFormPage editing />} />
-          <Route path="/trips/:tripId" element={<p>Trip overview</p>} />
-        </Routes>
-      </MemoryRouter>,
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/trips/trip-one/edit']}>
+          <Routes>
+            <Route path="/trips/:tripId/edit" element={<TripFormPage editing />} />
+            <Route path="/trips/:tripId" element={<p>Trip overview</p>} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
     );
     const nameField = await screen.findByLabelText('Trip name');
     await userEvent.setup().clear(nameField);

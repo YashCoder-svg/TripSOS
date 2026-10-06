@@ -10,6 +10,7 @@ import { imageRoutes } from './routes/imageRoutes.js';
 import { authRoutes } from './routes/authRoutes.js';
 import { userRoutes } from './routes/userRoutes.js';
 import { tripRoutes } from './routes/tripRoutes.js';
+import { placeRoutes } from './routes/placeRoutes.js';
 
 export const app = express();
 app.disable('x-powered-by');
@@ -55,5 +56,6 @@ app.use('/api/images', imageRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/trips', tripRoutes);
+app.use('/api/places', placeRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);

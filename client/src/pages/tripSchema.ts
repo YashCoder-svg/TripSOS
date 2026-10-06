@@ -9,6 +9,23 @@ function isRealDate(value: string): boolean {
   );
 }
 
+const coordinateSchema = z
+  .object({
+    latitude: z.number().finite().min(-90).max(90),
+    longitude: z.number().finite().min(-180).max(180),
+  })
+  .strict();
+
+const destinationDetailSchema = z.object({
+  name: z.string().trim().max(120).optional(),
+  formattedAddress: z.string().trim().max(250).optional(),
+  city: z.string().trim().max(120).optional(),
+  region: z.string().trim().max(120).optional(),
+  country: z.string().trim().max(120).optional(),
+  providerId: z.string().trim().max(120).optional(),
+  coordinates: coordinateSchema.optional(),
+});
+
 export const tripFormSchema = z
   .object({
     name: z
@@ -21,6 +38,9 @@ export const tripFormSchema = z
       .trim()
       .min(1, 'Add a destination.')
       .max(120, 'Keep the destination under 120 characters.'),
+    destinationCountry: z.string().trim().max(120).nullable().optional(),
+    destinationCoordinates: coordinateSchema.nullable().optional(),
+    destination: destinationDetailSchema.nullable().optional(),
     startDate: z.string().refine(isRealDate, 'Enter a valid start date.'),
     endDate: z.string().refine(isRealDate, 'Enter a valid end date.'),
     travelerCount: z

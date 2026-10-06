@@ -17,6 +17,12 @@ const envSchema = z
       (value) => (value === '' ? undefined : value),
       z.string().min(1).optional(),
     ),
+    LOCATION_PROVIDER: z.enum(['osm', 'geoapify']).default('osm'),
+    LOCATION_PROVIDER_API_KEY: z.preprocess(
+      (value) => (value === '' ? undefined : value),
+      z.string().min(1).optional(),
+    ),
+    MAP_STYLE_URL: z.string().url().default('https://tiles.openfreemap.org/styles/liberty'),
   })
   .refine((values) => values.JWT_ACCESS_SECRET !== values.JWT_REFRESH_SECRET, {
     message: 'JWT access and refresh secrets must be different',

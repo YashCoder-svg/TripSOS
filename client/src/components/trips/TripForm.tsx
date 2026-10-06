@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { tripFormSchema, type TripFormValues } from '../../pages/tripSchema';
 import type { Trip } from '../../types/trip';
+import { DestinationAutocomplete } from '../places/DestinationAutocomplete';
 
 const styles = [
   ['budget', 'Budget-minded'],
@@ -13,6 +14,7 @@ const styles = [
   ['family', 'Family'],
   ['backpacking', 'Backpacking'],
 ] as const;
+
 const interests = [
   ['nature', 'Nature'],
   ['food', 'Food'],
@@ -38,6 +40,8 @@ export function TripForm({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<TripFormValues>({
     resolver: zodResolver(tripFormSchema),
@@ -46,6 +50,9 @@ export function TripForm({
       ? {
           name: trip.name,
           destinationName: trip.destinationName,
+          destinationCountry: trip.destinationCountry,
+          destinationCoordinates: trip.destinationCoordinates,
+          destination: trip.destination,
           startDate: trip.startDate,
           endDate: trip.endDate,
           travelerCount: trip.travelerCount,
@@ -57,6 +64,9 @@ export function TripForm({
       : {
           name: '',
           destinationName: '',
+          destinationCountry: null,
+          destinationCoordinates: null,
+          destination: null,
           startDate: '',
           endDate: '',
           travelerCount: 1,
@@ -66,11 +76,17 @@ export function TripForm({
           interests: [],
         },
   });
+
+  const destinationName = watch('destinationName') ?? '';
+
   useEffect(() => {
-    if (trip)
+    if (trip) {
       reset({
         name: trip.name,
         destinationName: trip.destinationName,
+        destinationCountry: trip.destinationCountry,
+        destinationCoordinates: trip.destinationCoordinates,
+        destination: trip.destination,
         startDate: trip.startDate,
         endDate: trip.endDate,
         travelerCount: trip.travelerCount,
@@ -79,7 +95,9 @@ export function TripForm({
         travelStyle: trip.travelStyle,
         interests: trip.interests,
       });
+    }
   }, [trip, reset]);
+
   const submit = handleSubmit((values) => onSubmit(values));
 
   return (
@@ -103,19 +121,35 @@ export function TripForm({
         </div>
         <div className="form-field">
           <label htmlFor="trip-destination">Destination</label>
-          <input
+          <DestinationAutocomplete
             id="trip-destination"
-            autoComplete="off"
-            placeholder="Manali, India"
-            {...register('destinationName')}
-            aria-invalid={Boolean(errors.destinationName)}
-            aria-describedby={errors.destinationName ? 'trip-destination-error' : undefined}
+            value={destinationName}
+            onChange={(val) => setValue('destinationName', val, { shouldValidate: true })}
+            onSelect={(result) => {
+              const label = result.name
+                ? `${result.name}${result.country ? `, ${result.country}` : ''}`
+                : result.formattedAddress || '';
+              setValue('destinationName', label, { shouldValidate: true });
+              if (result.country) setValue('destinationCountry', result.country);
+              setValue('destinationCoordinates', {
+                latitude: result.latitude,
+                longitude: result.longitude,
+              });
+              setValue('destination', {
+                name: result.name,
+                country: result.country,
+                region: result.region,
+                city: result.city,
+                formattedAddress: result.formattedAddress,
+                providerId: result.providerId,
+                coordinates: {
+                  latitude: result.latitude,
+                  longitude: result.longitude,
+                },
+              });
+            }}
+            error={errors.destinationName?.message}
           />
-          {errors.destinationName && (
-            <span className="form-field__error" id="trip-destination-error">
-              {errors.destinationName.message}
-            </span>
-          )}
         </div>
         <div className="form-field">
           <label htmlFor="trip-start">Start date</label>
