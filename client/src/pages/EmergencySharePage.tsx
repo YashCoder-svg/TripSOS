@@ -87,7 +87,11 @@ export function EmergencySharePage() {
     const isExpired = errorMsg.toLowerCase().includes('expired');
 
     return (
-      <main className="emergency-share-page" role="main" aria-label="Emergency location unavailable">
+      <main
+        className="emergency-share-page"
+        role="main"
+        aria-label="Emergency location unavailable"
+      >
         <div className="emergency-share-container">
           <div className="emergency-card emergency-alert-card">
             <div className="emergency-alert-icon-box">
@@ -97,22 +101,23 @@ export function EmergencySharePage() {
               {isRevoked
                 ? 'Location Share Revoked'
                 : isExpired
-                ? 'Location Share Expired'
-                : 'Emergency Link Unavailable'}
+                  ? 'Location Share Expired'
+                  : 'Emergency Link Unavailable'}
             </h1>
             <p className="emergency-body">
               {isRevoked
                 ? 'This emergency location share link has been revoked by the sender.'
                 : isExpired
-                ? 'This temporary emergency location link has reached its expiration time.'
-                : errorMsg}
+                  ? 'This temporary emergency location link has reached its expiration time.'
+                  : errorMsg}
             </p>
 
             <div className="emergency-safety-guidance">
               <h2 className="emergency-h2">Urgent Safety Instructions</h2>
               <p className="emergency-guidance-text">
-                If you believe the sender is currently in immediate danger or facing a life-threatening crisis,
-                do not wait. Contact local emergency authorities immediately.
+                If you believe the sender is currently in immediate danger or facing a
+                life-threatening crisis, do not wait. Contact local emergency authorities
+                immediately.
               </p>
               <div className="emergency-quick-dial-grid">
                 <a href="tel:112" className="emergency-call-btn">
@@ -175,7 +180,11 @@ export function EmergencySharePage() {
                   title="Copy coordinates"
                   aria-label="Copy coordinates"
                 >
-                  {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                  {copied ? (
+                    <Check className="w-4 h-4 text-emerald-400" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -259,14 +268,17 @@ export function EmergencySharePage() {
         </section>
 
         {/* Urgent Emergency Call Assistance */}
-        <section className="emergency-card emergency-call-card" aria-label="Local Emergency Services">
+        <section
+          className="emergency-card emergency-call-card"
+          aria-label="Local Emergency Services"
+        >
           <div className="emergency-call-card-header">
             <AlertTriangle className="w-6 h-6 text-red-500 mr-2" aria-hidden="true" />
             <h2 className="emergency-h2">Dispatch Emergency Services</h2>
           </div>
           <p className="emergency-body-muted mb-4">
-            If you are responding to this emergency or contacting authorities on the sender's behalf,
-            use the direct buttons below to dial verified emergency dispatchers:
+            If you are responding to this emergency or contacting authorities on the sender's
+            behalf, use the direct buttons below to dial verified emergency dispatchers:
           </p>
 
           <div className="emergency-quick-dial-grid">
@@ -289,9 +301,9 @@ export function EmergencySharePage() {
         <footer className="emergency-privacy-shield">
           <Shield className="w-4 h-4 text-emerald-400 mr-2 flex-shrink-0" aria-hidden="true" />
           <p>
-            <strong>TripSOS Privacy Shield:</strong> This link contains only the minimum location snapshot
-            explicitly confirmed by the user. No personal account credentials, passwords, or financial data
-            are shared or accessible.
+            <strong>TripSOS Privacy Shield:</strong> This link contains only the minimum location
+            snapshot explicitly confirmed by the user. No personal account credentials, passwords,
+            or financial data are shared or accessible.
           </p>
         </footer>
       </div>

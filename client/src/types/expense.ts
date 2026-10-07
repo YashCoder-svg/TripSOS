@@ -1,11 +1,5 @@
 export type ExpenseCategory =
-  | 'accommodation'
-  | 'food'
-  | 'transport'
-  | 'activities'
-  | 'shopping'
-  | 'medical'
-  | 'other';
+  'accommodation' | 'food' | 'transport' | 'activities' | 'shopping' | 'medical' | 'other';
 
 export type ExpenseCurrency = 'INR' | 'USD' | 'EUR' | 'GBP';
 

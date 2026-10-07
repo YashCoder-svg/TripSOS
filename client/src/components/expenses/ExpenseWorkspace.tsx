@@ -9,18 +9,10 @@ import {
   TrendingUp,
   Wallet,
 } from 'lucide-react';
-import {
-  useCreateExpense,
-  useDeleteExpense,
-  useTripExpenses,
-} from '../../services/expenseService';
+import { useCreateExpense, useDeleteExpense, useTripExpenses } from '../../services/expenseService';
 import { useTripMembers } from '../../services/groupService';
 import { useOptionalAuth } from '../../store/AuthProvider';
-import type {
-  CreateExpensePayload,
-  ExpenseCategory,
-  ExpenseCurrency,
-} from '../../types/expense';
+import type { CreateExpensePayload, ExpenseCategory, ExpenseCurrency } from '../../types/expense';
 import type { Trip } from '../../types/trip';
 
 export interface ExpenseWorkspaceProps {
@@ -247,7 +239,9 @@ export function ExpenseWorkspace({ trip }: ExpenseWorkspaceProps) {
         <div className="expenses-empty-card">
           <Receipt size={32} className="text-slate-500 mb-2" />
           <h3>No expenses recorded yet</h3>
-          <p>Keep your group budget organized. Add hotels, meals, transport, and split costs evenly.</p>
+          <p>
+            Keep your group budget organized. Add hotels, meals, transport, and split costs evenly.
+          </p>
           <button
             type="button"
             className="add-expense-btn mt-4"
@@ -285,7 +279,8 @@ export function ExpenseWorkspace({ trip }: ExpenseWorkspaceProps) {
                     {expense.exchangeRateSource &&
                       expense.currency.toUpperCase() !== trip.currency.toUpperCase() && (
                         <p className="expense-exchange-note">
-                          Converted from {expense.currency} {expense.amount} using {expense.exchangeRateSource}
+                          Converted from {expense.currency} {expense.amount} using{' '}
+                          {expense.exchangeRateSource}
                         </p>
                       )}
                   </div>
@@ -294,8 +289,7 @@ export function ExpenseWorkspace({ trip }: ExpenseWorkspaceProps) {
                 <div className="expense-card-right">
                   <div className="expense-amount-block">
                     <span className="expense-amount-value">
-                      {trip.currency}{' '}
-                      {(expense.convertedAmount ?? expense.amount).toLocaleString()}
+                      {trip.currency} {(expense.convertedAmount ?? expense.amount).toLocaleString()}
                     </span>
                     {expense.currency !== trip.currency && (
                       <span className="expense-original-amount">
@@ -324,11 +318,19 @@ export function ExpenseWorkspace({ trip }: ExpenseWorkspaceProps) {
 
       {/* Add Expense Modal */}
       {showAddModal && (
-        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="add-expense-title">
+        <div
+          className="modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="add-expense-title"
+        >
           <div className="group-modal-card">
-            <h3 id="add-expense-title" className="group-modal-title">Record an Expense</h3>
+            <h3 id="add-expense-title" className="group-modal-title">
+              Record an Expense
+            </h3>
             <p className="group-modal-desc">
-              Log spending for the group. TripSOS automatically calculates balances and minimal settlement transfers.
+              Log spending for the group. TripSOS automatically calculates balances and minimal
+              settlement transfers.
             </p>
 
             <form onSubmit={handleAddExpense} className="expense-form">

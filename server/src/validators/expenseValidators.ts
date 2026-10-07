@@ -28,10 +28,9 @@ export const createExpenseSchema = z.object({
   notes: z.string().trim().max(300).optional().default(''),
 });
 
-export const updateExpenseSchema = createExpenseSchema.partial().refine(
-  (data) => Object.keys(data).length > 0,
-  'Provide at least one field to update.',
-);
+export const updateExpenseSchema = createExpenseSchema
+  .partial()
+  .refine((data) => Object.keys(data).length > 0, 'Provide at least one field to update.');
 
 export type CreateExpenseInput = z.infer<typeof createExpenseSchema>;
 export type UpdateExpenseInput = z.infer<typeof updateExpenseSchema>;

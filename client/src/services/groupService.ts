@@ -1,18 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from './apiClient';
-import type {
-  InviteMemberRequest,
-  InviteMemberResponse,
-  TripMember,
-} from '../types/group';
+import type { InviteMemberRequest, InviteMemberResponse, TripMember } from '../types/group';
 
 export async function fetchTripMembers(tripId: string): Promise<{
   members: TripMember[];
   tripOwnerId: string;
 }> {
-  return apiRequest<{ members: TripMember[]; tripOwnerId: string }>(
-    `/trips/${tripId}/members`,
-  );
+  return apiRequest<{ members: TripMember[]; tripOwnerId: string }>(`/trips/${tripId}/members`);
 }
 
 export async function inviteTripMember(
@@ -29,13 +23,10 @@ export async function joinTrip(
   tripId: string,
   inviteToken: string,
 ): Promise<{ joined: boolean; member: TripMember }> {
-  return apiRequest<{ joined: boolean; member: TripMember }>(
-    `/trips/${tripId}/members/join`,
-    {
-      method: 'POST',
-      body: JSON.stringify({ inviteToken }),
-    },
-  );
+  return apiRequest<{ joined: boolean; member: TripMember }>(`/trips/${tripId}/members/join`, {
+    method: 'POST',
+    body: JSON.stringify({ inviteToken }),
+  });
 }
 
 export async function removeTripMember(

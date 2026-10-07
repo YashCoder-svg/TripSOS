@@ -1,18 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from './apiClient';
-import type {
-  CreateExpensePayload,
-  Expense,
-  ExpenseSummary,
-} from '../types/expense';
+import type { CreateExpensePayload, Expense, ExpenseSummary } from '../types/expense';
 
 export async function fetchTripExpenses(tripId: string): Promise<{
   expenses: Expense[];
   summary: ExpenseSummary;
 }> {
-  return apiRequest<{ expenses: Expense[]; summary: ExpenseSummary }>(
-    `/trips/${tripId}/expenses`,
-  );
+  return apiRequest<{ expenses: Expense[]; summary: ExpenseSummary }>(`/trips/${tripId}/expenses`);
 }
 
 export async function createExpense(
@@ -30,25 +24,19 @@ export async function updateExpense(
   expenseId: string,
   payload: Partial<CreateExpensePayload>,
 ): Promise<{ expense: Expense }> {
-  return apiRequest<{ expense: Expense }>(
-    `/trips/${tripId}/expenses/${expenseId}`,
-    {
-      method: 'PATCH',
-      body: JSON.stringify(payload),
-    },
-  );
+  return apiRequest<{ expense: Expense }>(`/trips/${tripId}/expenses/${expenseId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
 }
 
 export async function deleteExpense(
   tripId: string,
   expenseId: string,
 ): Promise<{ deleted: boolean }> {
-  return apiRequest<{ deleted: boolean }>(
-    `/trips/${tripId}/expenses/${expenseId}`,
-    {
-      method: 'DELETE',
-    },
-  );
+  return apiRequest<{ deleted: boolean }>(`/trips/${tripId}/expenses/${expenseId}`, {
+    method: 'DELETE',
+  });
 }
 
 export function useTripExpenses(tripId: string) {

@@ -688,9 +688,9 @@ export function EmergencyPage() {
 
           <div className="emergency-share-panel">
             <p className="emergency-share-panel-desc">
-              Generate a cryptographically secure, temporary link to share your exact GPS coordinates
-              with trusted responders, friends, or family. The link expires automatically and does not
-              expose any account credentials or sensitive information.
+              Generate a cryptographically secure, temporary link to share your exact GPS
+              coordinates with trusted responders, friends, or family. The link expires
+              automatically and does not expose any account credentials or sensitive information.
             </p>
 
             {activeShare ? (
@@ -849,9 +849,7 @@ export function EmergencyPage() {
                   <div className="contact-card-info">
                     <div className="contact-badge-row">
                       <span className="contact-relation-pill">{contact.relationship}</span>
-                      {contact.isPrimary && (
-                        <span className="contact-primary-tag">Primary</span>
-                      )}
+                      {contact.isPrimary && <span className="contact-primary-tag">Primary</span>}
                       {contact.priority !== undefined && contact.priority > 1 && (
                         <span className="contact-priority-tag">Priority #{contact.priority}</span>
                       )}
@@ -872,8 +870,8 @@ export function EmergencyPage() {
                         activeShare
                           ? `?body=EMERGENCY SOS: I need help. My live emergency location link: ${window.location.origin}${activeShare.sharePath}`
                           : geoState.latitude && geoState.longitude
-                          ? `?body=EMERGENCY SOS: I need assistance. My coordinates: ${geoState.latitude},${geoState.longitude}`
-                          : '?body=EMERGENCY SOS: I need assistance. Please contact me.'
+                            ? `?body=EMERGENCY SOS: I need assistance. My coordinates: ${geoState.latitude},${geoState.longitude}`
+                            : '?body=EMERGENCY SOS: I need assistance. Please contact me.'
                       }`}
                       className="contact-sms-btn"
                       aria-label={`Send SMS to ${contact.name}`}

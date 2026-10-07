@@ -67,7 +67,7 @@ export function OfflinePage() {
   const handleUpdatePack = () => {
     const updated = buildOfflinePack({
       user: auth?.user ? { name: auth.user.name, email: auth.user.email } : undefined,
-      emergencyContacts: liveContacts.length ? liveContacts : pack?.emergencyContacts ?? [],
+      emergencyContacts: liveContacts.length ? liveContacts : (pack?.emergencyContacts ?? []),
       trips: tripsData ?? (pack?.activeTrips as unknown as typeof tripsData) ?? [],
     });
     saveOfflineEmergencyPack(updated);
@@ -124,8 +124,8 @@ export function OfflinePage() {
             Offline Emergency &amp; Travel Pack
           </h1>
           <p className="offline-page-subtitle">
-            Essential emergency contacts, authoritative dispatch numbers, and survival guides
-            remain fully operational on your device even without an internet connection.
+            Essential emergency contacts, authoritative dispatch numbers, and survival guides remain
+            fully operational on your device even without an internet connection.
           </p>
         </header>
 
@@ -255,11 +255,7 @@ export function OfflinePage() {
                 </p>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={promptInstall}
-              className="offline-pwa-install-btn"
-            >
+            <button type="button" onClick={promptInstall} className="offline-pwa-install-btn">
               Install App
             </button>
           </section>
@@ -399,7 +395,8 @@ export function OfflinePage() {
             Authoritative Offline First-Aid &amp; Crisis Protocols
           </h2>
           <p className="offline-guides-subtitle">
-            Verified step-by-step procedures to stabilize emergencies while awaiting professional dispatch.
+            Verified step-by-step procedures to stabilize emergencies while awaiting professional
+            dispatch.
           </p>
 
           <div className="offline-guides-accordion">

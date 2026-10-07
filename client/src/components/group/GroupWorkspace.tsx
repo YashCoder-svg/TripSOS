@@ -1,15 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import {
-  Check,
-  Copy,
-  Crown,
-  LogOut,
-  Mail,
-  Trash2,
-  UserPlus,
-  Users,
-} from 'lucide-react';
+import { Check, Copy, Crown, LogOut, Mail, Trash2, UserPlus, Users } from 'lucide-react';
 import {
   useInviteTripMember,
   useJoinTrip,
@@ -58,7 +49,9 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
       setSearchParams(searchParams);
     } catch (err) {
       setActionError(
-        err instanceof Error ? err.message : 'Failed to join trip. The invitation may be invalid or expired.',
+        err instanceof Error
+          ? err.message
+          : 'Failed to join trip. The invitation may be invalid or expired.',
       );
     }
   };
@@ -102,7 +95,12 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
   };
 
   const handleLeave = async () => {
-    if (!confirm('Are you sure you want to leave this trip? You will lose access to its itinerary and expenses.')) return;
+    if (
+      !confirm(
+        'Are you sure you want to leave this trip? You will lose access to its itinerary and expenses.',
+      )
+    )
+      return;
     try {
       await leaveTrip.mutateAsync();
       window.location.href = '/trips';
@@ -140,7 +138,9 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
             <UserPlus className="w-5 h-5 text-emerald-400" aria-hidden="true" />
             <div>
               <strong>You've been invited to join "{trip.name}"!</strong>
-              <p>Click below to join this trip group and collaborate on itineraries and expenses.</p>
+              <p>
+                Click below to join this trip group and collaborate on itineraries and expenses.
+              </p>
             </div>
           </div>
           <button
@@ -202,9 +202,7 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
 
           return (
             <article key={member._id} className="group-member-card">
-              <div className="member-avatar">
-                {name.slice(0, 2).toUpperCase()}
-              </div>
+              <div className="member-avatar">{name.slice(0, 2).toUpperCase()}</div>
               <div className="member-details">
                 <div className="member-name-row">
                   <h3 className="member-name">{name}</h3>
@@ -285,11 +283,19 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
 
       {/* Invite Member Modal */}
       {showInviteModal && (
-        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="invite-modal-title">
+        <div
+          className="modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="invite-modal-title"
+        >
           <div className="group-modal-card">
-            <h3 id="invite-modal-title" className="group-modal-title">Invite Traveler to Trip</h3>
+            <h3 id="invite-modal-title" className="group-modal-title">
+              Invite Traveler to Trip
+            </h3>
             <p className="group-modal-desc">
-              Invite friends or companions by email. They will receive a secure token to join and collaborate.
+              Invite friends or companions by email. They will receive a secure token to join and
+              collaborate.
             </p>
 
             {!inviteResult ? (
@@ -353,11 +359,7 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
                     value={inviteResult.link}
                     className="invite-link-input"
                   />
-                  <button
-                    type="button"
-                    onClick={handleCopyLink}
-                    className="invite-copy-btn"
-                  >
+                  <button type="button" onClick={handleCopyLink} className="invite-copy-btn">
                     {copied ? <Check size={16} /> : <Copy size={16} />}
                     {copied ? 'Copied' : 'Copy'}
                   </button>

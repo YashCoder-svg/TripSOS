@@ -93,7 +93,8 @@ export function calculateTripSettlement(
     } else {
       // If no explicit participants specified, distribute equally among all trip members
       const activeMemberIds = members.map((m) => m._id.toString());
-      const sharePerPerson = activeMemberIds.length > 0 ? effectiveAmount / activeMemberIds.length : effectiveAmount;
+      const sharePerPerson =
+        activeMemberIds.length > 0 ? effectiveAmount / activeMemberIds.length : effectiveAmount;
       for (const mId of activeMemberIds) {
         const currentOwed = owedMap.get(mId) ?? 0;
         owedMap.set(mId, currentOwed + sharePerPerson);
@@ -102,7 +103,9 @@ export function calculateTripSettlement(
   }
 
   // Calculate net balances
-  const allUserIds = Array.from(new Set([...members.map((m) => m._id.toString()), ...paidMap.keys(), ...owedMap.keys()]));
+  const allUserIds = Array.from(
+    new Set([...members.map((m) => m._id.toString()), ...paidMap.keys(), ...owedMap.keys()]),
+  );
   const memberBalances: MemberBalanceSummary[] = allUserIds.map((uId) => {
     const user = memberMap.get(uId) ?? { _id: uId, name: 'Traveler' };
     const paid = Number((paidMap.get(uId) ?? 0).toFixed(2));

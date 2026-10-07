@@ -38,7 +38,11 @@ expenseRoutes.get('/', async (req, res, next) => {
     const memberMap = new Map<string, ParticipantUser>();
     for (const m of activeMembers) {
       if (m.user && typeof m.user === 'object' && '_id' in m.user) {
-        const u = m.user as unknown as { _id: mongoose.Types.ObjectId; name: string; email?: string };
+        const u = m.user as unknown as {
+          _id: mongoose.Types.ObjectId;
+          name: string;
+          email?: string;
+        };
         memberMap.set(u._id.toString(), {
           _id: u._id.toString(),
           name: u.name,

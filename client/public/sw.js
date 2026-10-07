@@ -1,33 +1,35 @@
 const CACHE_NAME = 'tripsos-shell-v1';
-const PRECACHE_ASSETS = [
-  '/',
-  '/favicon.svg',
-  '/manifest.webmanifest',
-];
+const PRECACHE_ASSETS = ['/', '/favicon.svg', '/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS).catch((err) => {
-        // Precache error should not fail service worker installation
-        console.warn('Precache warning:', err);
-      });
-    }).then(() => self.skipWaiting())
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => {
+        return cache.addAll(PRECACHE_ASSETS).catch((err) => {
+          // Precache error should not fail service worker installation
+          console.warn('Precache warning:', err);
+        });
+      })
+      .then(() => self.skipWaiting()),
   );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-          return undefined;
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches
+      .keys()
+      .then((keys) => {
+        return Promise.all(
+          keys.map((key) => {
+            if (key !== CACHE_NAME) {
+              return caches.delete(key);
+            }
+            return undefined;
+          }),
+        );
+      })
+      .then(() => self.clients.claim()),
   );
 });
 
@@ -50,7 +52,7 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request).catch(() => {
         return caches.match('/') || caches.match('/index.html');
-      })
+      }),
     );
     return;
   }
@@ -72,7 +74,7 @@ self.addEventListener('fetch', (event) => {
           .catch(() => cachedResponse);
 
         return cachedResponse || fetchPromise;
-      })
+      }),
     );
   }
 });

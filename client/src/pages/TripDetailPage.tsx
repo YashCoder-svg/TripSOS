@@ -1,11 +1,13 @@
 import {
   ArrowLeft,
   ArrowRight,
+  Bot,
   CalendarDays,
   Check,
   Compass,
   Edit3,
   MapPinned,
+  Sparkles,
   Users,
   Wallet,
   X,
@@ -21,6 +23,7 @@ import { WeatherWidget } from '../components/weather/WeatherWidget';
 import { ItineraryWorkspace } from '../components/itinerary/ItineraryWorkspace';
 import { ExpenseWorkspace } from '../components/expenses/ExpenseWorkspace';
 import { GroupWorkspace } from '../components/group/GroupWorkspace';
+import { TravelAssistantDrawer } from '../components/ai/TravelAssistantDrawer';
 import { formatBudget, formatDateRange, formatTripDate, tripDuration } from './tripUtils';
 
 const tabs = [
@@ -254,6 +257,7 @@ export function TripDetailPage() {
   const deleteTrip = useDeleteTrip();
   const updateStatus = useUpdateTripStatus(tripId);
   const [showDelete, setShowDelete] = useState(false);
+  const [showAiAssistant, setShowAiAssistant] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const reduceMotion = useReducedMotion();
@@ -351,6 +355,14 @@ export function TripDetailPage() {
                 {updateStatus.isPending ? 'Updating…' : 'Cancel trip'}
               </button>
             )}
+            <button
+              type="button"
+              className="trip-hero-ai-btn"
+              onClick={() => setShowAiAssistant(true)}
+              aria-label="Open TripSOS AI Travel Assistant"
+            >
+              <Sparkles size={14} /> AI Assistant
+            </button>
             <button type="button" onClick={() => setShowDelete(true)}>
               Delete
             </button>
@@ -411,6 +423,23 @@ export function TripDetailPage() {
           onConfirm={() => void confirmDelete()}
         />
       )}
+
+      {/* Floating AI Assistant Trigger */}
+      <button
+        type="button"
+        className="trip-floating-ai-fab"
+        onClick={() => setShowAiAssistant(true)}
+        aria-label="Open TripSOS AI Assistant"
+      >
+        <Bot size={20} aria-hidden="true" />
+        <span>Ask AI</span>
+      </button>
+
+      <TravelAssistantDrawer
+        trip={trip}
+        isOpen={showAiAssistant}
+        onClose={() => setShowAiAssistant(false)}
+      />
     </main>
   );
 }

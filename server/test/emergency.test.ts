@@ -62,7 +62,12 @@ describe('Emergency API', () => {
 
     mongo = await MongoMemoryServer.create({ binary: { version: '7.0.14' } });
     await mongoose.connect(mongo.getUri());
-    await Promise.all([User.init(), EmergencySession.init(), LocationShare.init(), EmergencyContact.init()]);
+    await Promise.all([
+      User.init(),
+      EmergencySession.init(),
+      LocationShare.init(),
+      EmergencyContact.init(),
+    ]);
 
     const res = await request(app).post('/api/auth/register').set('Origin', origin).send({
       name: 'Safe Traveler',
@@ -180,9 +185,7 @@ describe('Emergency API', () => {
     expect(new Date(expiresAt).getTime()).toBeGreaterThan(Date.now());
 
     // Public retrieval without auth
-    const publicRes = await request(app)
-      .get(`/api/emergency/share/${token}`)
-      .set('Origin', origin);
+    const publicRes = await request(app).get(`/api/emergency/share/${token}`).set('Origin', origin);
 
     expect(publicRes.status).toBe(200);
     expect(publicRes.body.success).toBe(true);
@@ -197,14 +200,11 @@ describe('Emergency API', () => {
   });
 
   it('revokes an active location share and blocks subsequent public access', async () => {
-    const shareRes = await request(app)
-      .post('/api/emergency/share')
-      .set('Origin', origin)
-      .send({
-        latitude: 19.076,
-        longitude: 72.8777,
-        durationMinutes: 30,
-      });
+    const shareRes = await request(app).post('/api/emergency/share').set('Origin', origin).send({
+      latitude: 19.076,
+      longitude: 72.8777,
+      durationMinutes: 30,
+    });
 
     const token = shareRes.body.data.token;
 
@@ -215,9 +215,7 @@ describe('Emergency API', () => {
     expect(revokeRes.status).toBe(200);
     expect(revokeRes.body.data.revoked).toBe(true);
 
-    const publicRes = await request(app)
-      .get(`/api/emergency/share/${token}`)
-      .set('Origin', origin);
+    const publicRes = await request(app).get(`/api/emergency/share/${token}`).set('Origin', origin);
 
     expect(publicRes.status).toBe(410);
     expect(publicRes.body.error.code).toBe('SHARE_REVOKED');

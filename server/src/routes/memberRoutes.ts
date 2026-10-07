@@ -62,7 +62,11 @@ memberRoutes.post('/invite', async (req, res, next) => {
     if (targetUser) {
       const existing = await TripMember.findOne({ trip: trip._id, user: targetUser._id });
       if (existing && existing.status === 'active') {
-        throw new AppError(400, 'ALREADY_MEMBER', 'This user is already an active member of the trip.');
+        throw new AppError(
+          400,
+          'ALREADY_MEMBER',
+          'This user is already an active member of the trip.',
+        );
       }
     }
 
@@ -109,7 +113,11 @@ memberRoutes.post('/join', async (req, res, next) => {
     });
 
     if (!invitation) {
-      throw new AppError(404, 'INVITATION_NOT_FOUND', 'Invitation not found or has already been used.');
+      throw new AppError(
+        404,
+        'INVITATION_NOT_FOUND',
+        'Invitation not found or has already been used.',
+      );
     }
 
     if (invitation.inviteExpiresAt && new Date() > invitation.inviteExpiresAt) {

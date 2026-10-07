@@ -103,7 +103,8 @@ export const VERIFIED_FIRST_AID_GUIDES: OfflineFirstAidGuide[] = [
     id: 'severe-bleeding',
     title: 'Severe Bleeding & Hemorrhage',
     category: 'trauma',
-    urgentSummary: 'Apply direct firm pressure immediately. Do not remove saturated bandages—add more on top.',
+    urgentSummary:
+      'Apply direct firm pressure immediately. Do not remove saturated bandages—add more on top.',
     steps: [
       'Call emergency dispatch immediately (112 or local dispatch).',
       'Use a clean cloth or sterile dressing to apply firm, uninterrupted manual pressure directly over the wound.',
@@ -115,7 +116,8 @@ export const VERIFIED_FIRST_AID_GUIDES: OfflineFirstAidGuide[] = [
     id: 'cpr-cardiac',
     title: 'Adult CPR (Hands-Only & Rescue)',
     category: 'medical',
-    urgentSummary: 'If unresponsive and not breathing normally, start chest compressions immediately.',
+    urgentSummary:
+      'If unresponsive and not breathing normally, start chest compressions immediately.',
     steps: [
       'Check responsiveness: shout and tap shoulders firmly. Check breathing for no more than 10 seconds.',
       'Call 112 / 911 or direct a specific bystander to call and locate an AED.',
@@ -128,7 +130,8 @@ export const VERIFIED_FIRST_AID_GUIDES: OfflineFirstAidGuide[] = [
     id: 'heatstroke',
     title: 'Heatstroke & Severe Dehydration',
     category: 'medical',
-    urgentSummary: 'Medical emergency. Body temperature > 40°C with confusion or loss of consciousness.',
+    urgentSummary:
+      'Medical emergency. Body temperature > 40°C with confusion or loss of consciousness.',
     steps: [
       'Call emergency dispatch immediately.',
       'Move person to shade or air-conditioned area immediately.',

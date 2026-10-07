@@ -29,7 +29,9 @@ describe('OfflinePage', () => {
   it('renders immediate one-touch dispatch dialers (112, 108, 100, 101)', () => {
     renderComponent();
 
-    expect(screen.getByRole('heading', { name: /offline emergency & travel pack/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /offline emergency & travel pack/i }),
+    ).toBeInTheDocument();
     expect(screen.getAllByText('112').length).toBeGreaterThan(0);
     expect(screen.getAllByText('108 / 911').length).toBeGreaterThan(0);
     expect(screen.getAllByText('100 / 911').length).toBeGreaterThan(0);
@@ -99,7 +101,9 @@ describe('OfflinePage', () => {
     const user = userEvent.setup();
     renderComponent();
 
-    const updateBtn = screen.getByRole('button', { name: /download emergency pack|update offline pack/i });
+    const updateBtn = screen.getByRole('button', {
+      name: /download emergency pack|update offline pack/i,
+    });
     await user.click(updateBtn);
 
     expect(

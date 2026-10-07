@@ -253,7 +253,11 @@ emergencyRoutes.get('/share/:token', async (req, res, next) => {
 
     const share = await LocationShare.findOne({ token });
     if (!share) {
-      throw new AppError(404, 'SHARE_NOT_FOUND', 'This emergency location share link was not found.');
+      throw new AppError(
+        404,
+        'SHARE_NOT_FOUND',
+        'This emergency location share link was not found.',
+      );
     }
 
     if (share.revokedAt) {
@@ -265,11 +269,7 @@ emergencyRoutes.get('/share/:token', async (req, res, next) => {
     }
 
     if (new Date() > share.expiresAt) {
-      throw new AppError(
-        410,
-        'SHARE_EXPIRED',
-        'This emergency location share link has expired.',
-      );
+      throw new AppError(410, 'SHARE_EXPIRED', 'This emergency location share link has expired.');
     }
 
     if (!share.location) {

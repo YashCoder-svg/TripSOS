@@ -206,10 +206,7 @@ describe('Group Travel & Expenses API', () => {
         category: 'accommodation',
         date: '2026-11-02',
         splitMethod: 'equal',
-        participants: [
-          { user: ownerId },
-          { user: friendId },
-        ],
+        participants: [{ user: ownerId }, { user: friendId }],
       });
 
     expect(exp1.status).toBe(201);
@@ -229,10 +226,7 @@ describe('Group Travel & Expenses API', () => {
         category: 'activities',
         date: '2026-11-03',
         splitMethod: 'equal',
-        participants: [
-          { user: ownerId },
-          { user: friendId },
-        ],
+        participants: [{ user: ownerId }, { user: friendId }],
       });
 
     expect(exp2.status).toBe(201);
