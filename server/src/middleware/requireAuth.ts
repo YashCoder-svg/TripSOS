@@ -18,6 +18,21 @@ export const requireAuth: RequestHandler = (req, _res, next) => {
   }
 };
 
+export const optionalAuth: RequestHandler = (req, _res, next) => {
+  const authorization = req.get('authorization');
+  const match = authorization?.match(/^Bearer ([^\s]+)$/i);
+  if (!match) {
+    next();
+    return;
+  }
+  try {
+    req.auth = { userId: verifyAccessToken(match[1]!) };
+  } catch {
+    // If token invalid/expired, continue as unauthenticated guest
+  }
+  next();
+};
+
 export const requireTrustedOrigin: RequestHandler = (req, _res, next) => {
   const origin = req.get('origin');
   if (origin && origin !== env.CLIENT_URL) {

@@ -2,6 +2,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { LoginPage, RegisterPage } from './AuthPage';
 import { DashboardPage } from './DashboardPage';
 import { EmergencyPage } from './EmergencyPage';
@@ -40,23 +41,26 @@ vi.mock('../services/tripService', () => ({
 }));
 
 function renderAt(path: string, element: React.ReactNode) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/emergency" element={<EmergencyPage />} />
-        <Route path="/dashboard" element={element} />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <p>Private profile</p>
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[path]}>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/emergency" element={<EmergencyPage />} />
+          <Route path="/dashboard" element={element} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <p>Private profile</p>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>,
   );
 }
 
@@ -147,10 +151,8 @@ describe('Phase 2 account pages', () => {
 
   it('keeps emergency guidance available without authentication', () => {
     renderAt('/emergency', <p>Dashboard</p>);
-    expect(
-      screen.getByRole('heading', { name: /start with what keeps you safe/i }),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/add emergency contacts after signing in/i)).toBeInTheDocument();
-    expect(screen.getByText(/does not share your location or contact anyone/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /i'm in trouble/i })).toBeInTheDocument();
+    expect(screen.getByText(/guest mode/i)).toBeInTheDocument();
+    expect(screen.getByText(/tripSOS is not an emergency dispatch agency/i)).toBeInTheDocument();
   });
 });
