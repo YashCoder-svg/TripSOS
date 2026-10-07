@@ -21,10 +21,13 @@ import {
   ShieldAlert,
   UserCheck,
   Users,
+  WifiOff,
   XCircle,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { authService } from '../services/authService';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
+import { getOfflineEmergencyPack } from '../services/offlinePackService';
 import {
   useCreateLocationShare,
   useEmergencyNumbers,
@@ -170,15 +173,29 @@ export function EmergencyPage() {
     selectedCategory === 'medical' ? 'hospitals' : selectedCategory === 'police' ? 'police' : 'all',
   );
 
-  // Load user emergency contacts if authenticated
+  const { isOnline } = useNetworkStatus();
+
+  // Load user emergency contacts (with offline pack fallback)
   useEffect(() => {
     if (authenticated) {
       setContactsLoading(true);
       authService
         .getEmergencyContacts()
         .then((data) => setContacts(data))
-        .catch(() => setContacts([]))
+        .catch(() => {
+          const pack = getOfflineEmergencyPack();
+          if (pack?.emergencyContacts?.length) {
+            setContacts(pack.emergencyContacts as unknown as EmergencyContact[]);
+          } else {
+            setContacts([]);
+          }
+        })
         .finally(() => setContactsLoading(false));
+    } else {
+      const pack = getOfflineEmergencyPack();
+      if (pack?.emergencyContacts?.length) {
+        setContacts(pack.emergencyContacts as unknown as EmergencyContact[]);
+      }
     }
   }, [authenticated]);
 
@@ -359,6 +376,19 @@ export function EmergencyPage() {
               <span>I'M IN TROUBLE</span>
             </button>
           </header>
+        )}
+
+        {!isOnline && (
+          <aside className="emergency-offline-notice" role="status">
+            <WifiOff size={20} aria-hidden="true" />
+            <div className="emergency-offline-text">
+              <strong>Offline Mode Active:</strong> Showing local emergency numbers and cached
+              contacts. Live hospital and police search requires an internet connection.
+            </div>
+            <Link to="/offline" className="emergency-offline-link">
+              Offline Pack &rarr;
+            </Link>
+          </aside>
         )}
 
         {/* IMMEDIATE EMERGENCY NUMBERS (TOP PRIORITY) */}

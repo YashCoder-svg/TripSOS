@@ -52,6 +52,9 @@ const EmergencyPage = lazy(() =>
 const EmergencySharePage = lazy(() =>
   import('../pages/EmergencySharePage').then((module) => ({ default: module.EmergencySharePage })),
 );
+const OfflinePage = lazy(() =>
+  import('../pages/OfflinePage').then((module) => ({ default: module.OfflinePage })),
+);
 const AuthPageNotFound = lazy(() =>
   import('../pages/AuthPageNotFound').then((module) => ({ default: module.AuthPageNotFound })),
 );
@@ -209,6 +212,14 @@ export const router = createBrowserRouter([
         element: (
           <LazyRoute>
             <EmergencySharePage />
+          </LazyRoute>
+        ),
+      },
+      {
+        path: '/offline',
+        element: (
+          <LazyRoute>
+            <OfflinePage />
           </LazyRoute>
         ),
       },

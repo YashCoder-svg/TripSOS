@@ -5,7 +5,10 @@ import { RouterProvider } from 'react-router-dom';
 import { LazyMotion } from 'framer-motion';
 import { router } from './routes/router';
 import { AuthProvider } from './store/AuthProvider';
+import { registerServiceWorker } from './services/serviceWorkerRegistration';
 import './styles.css';
+
+registerServiceWorker();
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, retry: 1, refetchOnWindowFocus: false } },
