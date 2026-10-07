@@ -11,6 +11,7 @@ const emergencyContactSchema = new Schema(
       enum: ['family', 'friend', 'partner', 'colleague', 'other'],
     },
     isPrimary: { type: Boolean, default: false, required: true },
+    priority: { type: Number, default: 1, min: 1, max: 10 },
   },
   { timestamps: true, versionKey: false },
 );
@@ -19,6 +20,7 @@ emergencyContactSchema.index(
   { userId: 1, isPrimary: 1 },
   { unique: true, partialFilterExpression: { isPrimary: true } },
 );
+emergencyContactSchema.index({ userId: 1, priority: 1 });
 
 export type EmergencyContactRecord = InferSchemaType<typeof emergencyContactSchema>;
 export const EmergencyContact: mongoose.Model<EmergencyContactRecord> =

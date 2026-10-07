@@ -59,6 +59,20 @@ vi.mock('../services/emergencyService', () => ({
     mutateAsync: mockEndMutate,
     isPending: false,
   }),
+  useCreateLocationShare: () => ({
+    mutateAsync: vi.fn().mockResolvedValue({
+      token: 'test-share-token-xyz',
+      sharePath: '/emergency/share/test-share-token-xyz',
+      durationMinutes: 60,
+      expiresAt: new Date(Date.now() + 3600000).toISOString(),
+      location: { latitude: 32.24, longitude: 77.18 },
+    }),
+    isPending: false,
+  }),
+  useRevokeLocationShare: () => ({
+    mutateAsync: vi.fn().mockResolvedValue({ revoked: true }),
+    isPending: false,
+  }),
 }));
 
 vi.mock('../store/AuthProvider', () => ({
@@ -167,5 +181,19 @@ describe('EmergencyPage', () => {
       }),
     );
     expect(screen.queryByText(/EMERGENCY MODE ACTIVE/i)).not.toBeInTheDocument();
+  });
+
+  it('renders Share My Emergency Location section with duration options', async () => {
+    renderWithProviders(<EmergencyPage />);
+    const user = userEvent.setup();
+
+    expect(screen.getByText(/Share My Emergency Location/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '30 Minutes' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '1 Hour' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '4 Hours' })).toBeInTheDocument();
+
+    const duration30 = screen.getByRole('button', { name: '30 Minutes' });
+    await user.click(duration30);
+    expect(duration30).toHaveClass('active');
   });
 });

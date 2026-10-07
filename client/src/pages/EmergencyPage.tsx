@@ -3,8 +3,12 @@ import {
   AlertOctagon,
   AlertTriangle,
   Building2,
+  Check,
   CheckCircle,
+  Clock,
+  Copy,
   Crosshair,
+  ExternalLink,
   Flame,
   Hospital,
   MapPin,
@@ -12,6 +16,7 @@ import {
   PhoneCall,
   Pill,
   Send,
+  Share2,
   Shield,
   ShieldAlert,
   UserCheck,
@@ -21,13 +26,20 @@ import {
 import { Link } from 'react-router-dom';
 import { authService } from '../services/authService';
 import {
+  useCreateLocationShare,
   useEmergencyNumbers,
   useEndEmergencySession,
   useNearbyEmergencyServices,
+  useRevokeLocationShare,
   useStartEmergencySession,
 } from '../services/emergencyService';
 import { useOptionalAuth } from '../store/AuthProvider';
-import type { EmergencyCategory, EmergencySession } from '../types/emergency';
+import type {
+  EmergencyCategory,
+  EmergencySession,
+  LocationShareDuration,
+  LocationShareResponse,
+} from '../types/emergency';
 import type { EmergencyContact } from '../types/user';
 
 interface GeolocationState {
@@ -136,8 +148,16 @@ export function EmergencyPage() {
   const [contacts, setContacts] = useState<EmergencyContact[]>([]);
   const [contactsLoading, setContactsLoading] = useState(false);
 
+  // Phase 7: Explicit Location Sharing State
+  const [activeShare, setActiveShare] = useState<LocationShareResponse | null>(null);
+  const [shareDuration, setShareDuration] = useState<LocationShareDuration>(60);
+  const [shareCopied, setShareCopied] = useState(false);
+  const [shareError, setShareError] = useState<string | null>(null);
+
   const startSession = useStartEmergencySession();
   const endSession = useEndEmergencySession();
+  const createShareMutation = useCreateLocationShare();
+  const revokeShareMutation = useRevokeLocationShare();
 
   // Load authoritative emergency numbers
   const { data: numbersData } = useEmergencyNumbers();
@@ -238,6 +258,54 @@ export function EmergencyPage() {
     }
     setActiveSession(null);
     setInEmergencyMode(false);
+  };
+
+  const handleShareLocation = async () => {
+    setShareError(null);
+    if (!geoState.latitude || !geoState.longitude) {
+      requestLocation();
+      return;
+    }
+
+    try {
+      const result = await createShareMutation.mutateAsync({
+        latitude: geoState.latitude,
+        longitude: geoState.longitude,
+        accuracyMeters: geoState.accuracyMeters,
+        durationMinutes: shareDuration,
+        sessionId: activeSession?._id,
+        note: inEmergencyMode
+          ? `Emergency SOS (${selectedCategory.toUpperCase()})`
+          : 'Emergency Location Snapshot',
+      });
+      setActiveShare(result);
+    } catch (err) {
+      setShareError(
+        err instanceof Error ? err.message : 'Failed to generate emergency location share link.',
+      );
+    }
+  };
+
+  const handleRevokeShare = async () => {
+    if (!activeShare) return;
+    try {
+      await revokeShareMutation.mutateAsync(activeShare.token);
+      setActiveShare(null);
+    } catch (err) {
+      setShareError(err instanceof Error ? err.message : 'Failed to revoke location share link.');
+    }
+  };
+
+  const handleCopyShareLink = async () => {
+    if (!activeShare) return;
+    const shareUrl = `${window.location.origin}${activeShare.sharePath}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2500);
+    } catch {
+      // Clipboard fallback
+    }
   };
 
   return (
@@ -579,6 +647,128 @@ export function EmergencyPage() {
           )}
         </section>
 
+        {/* PHASE 7: USER-CONTROLLED EMERGENCY LOCATION SHARING */}
+        <section className="emergency-share-section" aria-labelledby="share-heading">
+          <div className="emergency-section-header">
+            <div>
+              <span className="emergency-eyebrow">PRIVACY-FIRST BROADCAST</span>
+              <h2 id="share-heading">Share My Emergency Location</h2>
+            </div>
+          </div>
+
+          <div className="emergency-share-panel">
+            <p className="emergency-share-panel-desc">
+              Generate a cryptographically secure, temporary link to share your exact GPS coordinates
+              with trusted responders, friends, or family. The link expires automatically and does not
+              expose any account credentials or sensitive information.
+            </p>
+
+            {activeShare ? (
+              <div className="emergency-active-share-box">
+                <div className="active-share-badge">
+                  <Clock size={16} className="text-amber-400" />
+                  <span>
+                    Active SOS Share • Expires at{' '}
+                    {new Date(activeShare.expiresAt).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                </div>
+
+                <div className="active-share-link-row">
+                  <input
+                    type="text"
+                    readOnly
+                    value={`${window.location.origin}${activeShare.sharePath}`}
+                    className="active-share-input"
+                    aria-label="Secure location share link"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCopyShareLink}
+                    className="active-share-copy-btn"
+                  >
+                    {shareCopied ? (
+                      <>
+                        <Check size={16} className="text-emerald-400" /> Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={16} /> Copy Link
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="active-share-actions">
+                  <a
+                    href={activeShare.sharePath}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="active-share-open-btn"
+                  >
+                    <ExternalLink size={15} /> Preview Public SOS View
+                  </a>
+                  <button
+                    type="button"
+                    onClick={handleRevokeShare}
+                    className="active-share-revoke-btn"
+                    disabled={revokeShareMutation.isPending}
+                  >
+                    Revoke Link Now
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="emergency-create-share-flow">
+                <div className="share-duration-selector">
+                  <span className="selector-label">Auto-Expiration Duration:</span>
+                  <div className="duration-pill-group">
+                    {([30, 60, 240] as const).map((duration) => (
+                      <button
+                        key={duration}
+                        type="button"
+                        className={`duration-pill ${shareDuration === duration ? 'active' : ''}`}
+                        onClick={() => setShareDuration(duration)}
+                      >
+                        {duration === 30 ? '30 Minutes' : duration === 60 ? '1 Hour' : '4 Hours'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="share-trigger-row">
+                  {!geoState.consented ? (
+                    <button
+                      type="button"
+                      className="emergency-locate-prompt-btn"
+                      onClick={requestLocation}
+                      disabled={geoState.loading}
+                    >
+                      <Crosshair size={16} /> Enable GPS to generate share link
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="emergency-generate-share-btn"
+                      onClick={handleShareLocation}
+                      disabled={createShareMutation.isPending}
+                    >
+                      <Share2 size={18} />
+                      {createShareMutation.isPending
+                        ? 'Generating Secure Link…'
+                        : 'Generate Secure Location Share Link'}
+                    </button>
+                  )}
+                </div>
+
+                {shareError && <p className="emergency-share-error">{shareError}</p>}
+              </div>
+            )}
+          </div>
+        </section>
+
         {/* EMERGENCY CONTACTS */}
         <section className="emergency-contacts-section" aria-labelledby="contacts-heading">
           <div className="emergency-section-header">
@@ -627,12 +817,17 @@ export function EmergencyPage() {
               {contacts.map((contact) => (
                 <article key={contact._id} className="emergency-contact-card">
                   <div className="contact-card-info">
-                    <span className="contact-relation-pill">{contact.relationship}</span>
+                    <div className="contact-badge-row">
+                      <span className="contact-relation-pill">{contact.relationship}</span>
+                      {contact.isPrimary && (
+                        <span className="contact-primary-tag">Primary</span>
+                      )}
+                      {contact.priority !== undefined && contact.priority > 1 && (
+                        <span className="contact-priority-tag">Priority #{contact.priority}</span>
+                      )}
+                    </div>
                     <h3>{contact.name}</h3>
                     <p>{contact.phone}</p>
-                    {contact.isPrimary && (
-                      <span className="contact-primary-tag">Primary</span>
-                    )}
                   </div>
                   <div className="contact-card-actions">
                     <a
@@ -644,9 +839,11 @@ export function EmergencyPage() {
                     </a>
                     <a
                       href={`sms:${contact.phone.replace(/\s+/g, '')}${
-                        geoState.latitude && geoState.longitude
-                          ? `?body=EMERGENCY: I need assistance. My coordinates: ${geoState.latitude},${geoState.longitude}`
-                          : '?body=EMERGENCY: I need assistance. Please contact me.'
+                        activeShare
+                          ? `?body=EMERGENCY SOS: I need help. My live emergency location link: ${window.location.origin}${activeShare.sharePath}`
+                          : geoState.latitude && geoState.longitude
+                          ? `?body=EMERGENCY SOS: I need assistance. My coordinates: ${geoState.latitude},${geoState.longitude}`
+                          : '?body=EMERGENCY SOS: I need assistance. Please contact me.'
                       }`}
                       className="contact-sms-btn"
                       aria-label={`Send SMS to ${contact.name}`}

@@ -50,6 +50,7 @@ export const createEmergencyContactSchema = z
       .regex(/^\+[1-9]\d{7,14}$/, 'Use an international phone number, such as +14155552671.'),
     relationship: z.enum(['family', 'friend', 'partner', 'colleague', 'other']),
     isPrimary: z.boolean().default(false),
+    priority: z.number().int().min(1).max(10).default(1),
   })
   .strict();
 

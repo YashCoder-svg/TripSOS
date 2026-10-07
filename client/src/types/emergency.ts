@@ -42,3 +42,41 @@ export interface NearbyEmergencyServicesResult {
   services: PlaceSummary[];
   source: string;
 }
+
+export type LocationShareDuration = 30 | 60 | 240;
+
+export interface LocationShareRequest {
+  latitude: number;
+  longitude: number;
+  accuracyMeters?: number;
+  address?: string;
+  durationMinutes: LocationShareDuration;
+  note?: string;
+  sessionId?: string;
+}
+
+export interface LocationShareResponse {
+  token: string;
+  sharePath: string;
+  durationMinutes: LocationShareDuration;
+  expiresAt: string;
+  location: {
+    latitude: number;
+    longitude: number;
+    accuracyMeters?: number | null;
+    address?: string | null;
+  };
+}
+
+export interface SharedLocationPublicData {
+  location: {
+    latitude: number;
+    longitude: number;
+    accuracyMeters?: number | null;
+    address?: string | null;
+  };
+  note?: string;
+  createdAt: string;
+  expiresAt: string;
+  durationMinutes: LocationShareDuration;
+}

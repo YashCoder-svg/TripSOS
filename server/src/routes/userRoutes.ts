@@ -27,6 +27,7 @@ function publicContact(
     phone: contact.phone,
     relationship: contact.relationship,
     isPrimary: contact.isPrimary,
+    priority: contact.priority ?? 1,
     createdAt: contact.createdAt,
     updatedAt: contact.updatedAt,
   };
@@ -67,6 +68,7 @@ userRoutes.get('/me/emergency-contacts', async (req, res, next) => {
   try {
     const contacts = await EmergencyContact.find({ userId: req.auth!.userId }).sort({
       isPrimary: -1,
+      priority: 1,
       createdAt: 1,
     });
     res.json({ success: true, data: { contacts: contacts.map(publicContact) } });

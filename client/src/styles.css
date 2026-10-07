@@ -7145,3 +7145,419 @@ img {
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
+
+/* ==========================================================================
+   PHASE 7 — EMERGENCY LOCATION SHARING & PRIORITY CONTACTS
+   ========================================================================== */
+.contact-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.contact-priority-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #475569;
+}
+.emergency-mode-active .contact-priority-tag {
+  background: #1e293b;
+  color: #94a3b8;
+}
+
+.emergency-share-section {
+  margin: 32px 0;
+}
+.emergency-share-panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+.emergency-mode-active .emergency-share-panel {
+  background: #141d17;
+  border-color: #26352b;
+}
+.emergency-share-panel-desc {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.emergency-mode-active .emergency-share-panel-desc {
+  color: #94a3b8;
+}
+
+.emergency-active-share-box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.active-share-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef3c7;
+  color: #92400e;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  width: fit-content;
+}
+.emergency-mode-active .active-share-badge {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.active-share-link-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.active-share-input {
+  flex: 1;
+  min-width: 240px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 13px;
+  color: #0f172a;
+}
+.emergency-mode-active .active-share-input {
+  background: #0d140f;
+  border-color: #2a3d2f;
+  color: #e2e8f0;
+}
+.active-share-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.active-share-copy-btn:hover {
+  opacity: 0.9;
+}
+.emergency-mode-active .active-share-copy-btn {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+.active-share-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.active-share-open-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+}
+.emergency-mode-active .active-share-open-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+}
+.active-share-revoke-btn {
+  padding: 8px 14px;
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.emergency-mode-active .active-share-revoke-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.share-duration-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.selector-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+}
+.emergency-mode-active .selector-label {
+  color: #94a3b8;
+}
+.duration-pill-group {
+  display: flex;
+  gap: 8px;
+}
+.duration-pill {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  cursor: pointer;
+}
+.emergency-mode-active .duration-pill {
+  background: #111a14;
+  border-color: #26352b;
+  color: #94a3b8;
+}
+.duration-pill.active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+.emergency-mode-active .duration-pill.active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+.emergency-generate-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #b91c1c;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.emergency-generate-share-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+.emergency-share-error {
+  color: #b91c1c;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+/* Public Emergency Share Page */
+.emergency-share-page {
+  min-height: 100vh;
+  background: #090e0b;
+  color: #f1f5f9;
+  padding: 32px 16px 64px;
+}
+.emergency-share-container {
+  max-width: 780px;
+  margin: 0 auto;
+}
+.emergency-share-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.emergency-badge-pulse {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+.emergency-share-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+.emergency-share-subtitle {
+  font-size: 14px;
+  color: #94a3b8;
+}
+.emergency-card {
+  background: #111a14;
+  border: 1px solid #1f2f24;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.emergency-details-header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.emergency-coords-group,
+.emergency-timer-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.emergency-coords-value,
+.emergency-timer-value {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+.emergency-copy-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  border-radius: 6px;
+  padding: 6px;
+  margin-left: 8px;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+.emergency-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+.emergency-accuracy-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+.emergency-address-block,
+.emergency-note-block {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+.emergency-address-text,
+.emergency-note-text {
+  font-size: 14px;
+  color: #e2e8f0;
+  margin-top: 4px;
+}
+.emergency-metadata-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 18px;
+}
+.emergency-directions-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.emergency-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+.emergency-btn-primary:hover {
+  background: #1d4ed8;
+}
+.emergency-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+.emergency-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+.emergency-map-card {
+  padding: 20px;
+}
+.emergency-map-embed-wrapper {
+  height: 360px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+.emergency-maplibre-container {
+  width: 100%;
+  height: 100%;
+}
+.emergency-call-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.emergency-quick-dial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.emergency-call-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 10px;
+  text-decoration: none;
+}
+.emergency-call-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+.emergency-privacy-shield {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 12px;
+  font-size: 12px;
+  color: #a7f3d0;
+  line-height: 1.5;
+}
+

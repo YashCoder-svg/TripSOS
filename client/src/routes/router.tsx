@@ -43,6 +43,9 @@ const ProfilePage = lazy(() =>
 const EmergencyPage = lazy(() =>
   import('../pages/EmergencyPage').then((module) => ({ default: module.EmergencyPage })),
 );
+const EmergencySharePage = lazy(() =>
+  import('../pages/EmergencySharePage').then((module) => ({ default: module.EmergencySharePage })),
+);
 const AuthPageNotFound = lazy(() =>
   import('../pages/AuthPageNotFound').then((module) => ({ default: module.AuthPageNotFound })),
 );
@@ -176,6 +179,14 @@ export const router = createBrowserRouter([
         element: (
           <LazyRoute>
             <EmergencyPage />
+          </LazyRoute>
+        ),
+      },
+      {
+        path: '/emergency/share/:token',
+        element: (
+          <LazyRoute>
+            <EmergencySharePage />
           </LazyRoute>
         ),
       },

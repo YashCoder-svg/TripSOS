@@ -103,3 +103,49 @@ export function useEndEmergencySession() {
       updateEmergencySessionStatus(sessionId, status),
   });
 }
+
+export async function createLocationShare(
+  payload: import('../types/emergency').LocationShareRequest,
+): Promise<import('../types/emergency').LocationShareResponse> {
+  return apiRequest<import('../types/emergency').LocationShareResponse>('/emergency/share', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function revokeLocationShare(
+  token: string,
+): Promise<{ revoked: boolean; revokedAt: string }> {
+  return apiRequest<{ revoked: boolean; revokedAt: string }>(`/emergency/share/${token}/revoke`, {
+    method: 'POST',
+  });
+}
+
+export async function fetchSharedLocation(
+  token: string,
+): Promise<import('../types/emergency').SharedLocationPublicData> {
+  return apiRequest<import('../types/emergency').SharedLocationPublicData>(
+    `/emergency/share/${token}`,
+  );
+}
+
+export function useSharedLocation(token: string) {
+  return useQuery({
+    queryKey: ['emergency-share', token],
+    queryFn: () => fetchSharedLocation(token),
+    enabled: Boolean(token),
+    refetchInterval: 30_000,
+  });
+}
+
+export function useCreateLocationShare() {
+  return useMutation({
+    mutationFn: createLocationShare,
+  });
+}
+
+export function useRevokeLocationShare() {
+  return useMutation({
+    mutationFn: (token: string) => revokeLocationShare(token),
+  });
+}

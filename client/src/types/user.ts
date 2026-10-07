@@ -21,6 +21,7 @@ export type EmergencyContact = {
   phone: string;
   relationship: 'family' | 'friend' | 'partner' | 'colleague' | 'other';
   isPrimary: boolean;
+  priority?: number;
   createdAt: string;
   updatedAt: string;
 };

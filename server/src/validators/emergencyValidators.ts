@@ -26,3 +26,17 @@ export const emergencyNumbersQuerySchema = z.object({
   country: z.string().trim().max(100).optional(),
   countryCode: z.string().trim().max(10).optional(),
 });
+
+export const createLocationShareSchema = z.object({
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  accuracyMeters: z.number().min(0).max(100000).optional(),
+  address: z.string().trim().max(200).optional(),
+  durationMinutes: z.union([z.literal(30), z.literal(60), z.literal(240)]).default(60),
+  note: z.string().trim().max(200).optional(),
+  sessionId: z.string().trim().max(50).optional(),
+});
+
+export const tokenParamSchema = z.object({
+  token: z.string().regex(/^[A-Za-z0-9_-]{16,64}$/, 'Invalid share token format.'),
+});

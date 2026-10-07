@@ -14,6 +14,8 @@ vi.stubEnv('CLIENT_URL', 'http://localhost:5173');
 const { app } = await import('../src/app.js');
 const { User } = await import('../src/models/User.js');
 const { EmergencySession } = await import('../src/models/EmergencySession.js');
+const { LocationShare } = await import('../src/models/LocationShare.js');
+const { EmergencyContact } = await import('../src/models/EmergencyContact.js');
 const { locationService } = await import('../src/services/location/locationService.js');
 
 const origin = 'http://localhost:5173';
@@ -60,7 +62,7 @@ describe('Emergency API', () => {
 
     mongo = await MongoMemoryServer.create({ binary: { version: '7.0.14' } });
     await mongoose.connect(mongo.getUri());
-    await Promise.all([User.init(), EmergencySession.init()]);
+    await Promise.all([User.init(), EmergencySession.init(), LocationShare.init(), EmergencyContact.init()]);
 
     const res = await request(app).post('/api/auth/register').set('Origin', origin).send({
       name: 'Safe Traveler',
@@ -152,5 +154,113 @@ describe('Emergency API', () => {
     expect(res.status).toBe(200);
     expect(res.body.data.numbers.general).toBe('112');
     expect(res.body.data.numbers.source).toContain('International Telecommunication Union');
+  });
+
+  it('generates a secure location share link with selected duration and retrieves minimal safe data', async () => {
+    const shareRes = await request(app)
+      .post('/api/emergency/share')
+      .set('Origin', origin)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        latitude: 32.2396,
+        longitude: 77.1887,
+        accuracyMeters: 12,
+        address: 'Mall Road, Manali',
+        durationMinutes: 60,
+        note: 'Stuck during heavy snow, need assistance',
+      });
+
+    expect(shareRes.status).toBe(201);
+    expect(shareRes.body.success).toBe(true);
+    const { token, sharePath, expiresAt, durationMinutes } = shareRes.body.data;
+    expect(token).toBeDefined();
+    expect(token.length).toBeGreaterThan(20);
+    expect(sharePath).toBe(`/emergency/share/${token}`);
+    expect(durationMinutes).toBe(60);
+    expect(new Date(expiresAt).getTime()).toBeGreaterThan(Date.now());
+
+    // Public retrieval without auth
+    const publicRes = await request(app)
+      .get(`/api/emergency/share/${token}`)
+      .set('Origin', origin);
+
+    expect(publicRes.status).toBe(200);
+    expect(publicRes.body.success).toBe(true);
+    expect(publicRes.body.data.location.latitude).toBe(32.2396);
+    expect(publicRes.body.data.location.longitude).toBe(77.1887);
+    expect(publicRes.body.data.location.accuracyMeters).toBe(12);
+    expect(publicRes.body.data.note).toBe('Stuck during heavy snow, need assistance');
+    // Ensure no private user details leaked
+    expect(publicRes.body.data.user).toBeUndefined();
+    expect(publicRes.body.data.email).toBeUndefined();
+    expect(publicRes.body.data.password).toBeUndefined();
+  });
+
+  it('revokes an active location share and blocks subsequent public access', async () => {
+    const shareRes = await request(app)
+      .post('/api/emergency/share')
+      .set('Origin', origin)
+      .send({
+        latitude: 19.076,
+        longitude: 72.8777,
+        durationMinutes: 30,
+      });
+
+    const token = shareRes.body.data.token;
+
+    const revokeRes = await request(app)
+      .post(`/api/emergency/share/${token}/revoke`)
+      .set('Origin', origin);
+
+    expect(revokeRes.status).toBe(200);
+    expect(revokeRes.body.data.revoked).toBe(true);
+
+    const publicRes = await request(app)
+      .get(`/api/emergency/share/${token}`)
+      .set('Origin', origin);
+
+    expect(publicRes.status).toBe(410);
+    expect(publicRes.body.error.code).toBe('SHARE_REVOKED');
+  });
+
+  it('returns 410 SHARE_EXPIRED when share expiration date is past', async () => {
+    // Manually create an expired share in DB
+    const expiredToken = 'expired-token-safe-1234567890abcdef';
+    await LocationShare.create({
+      token: expiredToken,
+      location: { latitude: 28.6139, longitude: 77.209 },
+      durationMinutes: 30,
+      expiresAt: new Date(Date.now() - 60000), // 1 minute in the past
+    });
+
+    const res = await request(app)
+      .get(`/api/emergency/share/${expiredToken}`)
+      .set('Origin', origin);
+
+    expect(res.status).toBe(410);
+    expect(res.body.error.code).toBe('SHARE_EXPIRED');
+  });
+
+  it('supports emergency contact priority ordering', async () => {
+    await request(app)
+      .post('/api/users/me/emergency-contacts')
+      .set('Origin', origin)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        name: 'Doctor Contact',
+        phone: '+919876543210',
+        relationship: 'other',
+        priority: 2,
+      });
+
+    const listRes = await request(app)
+      .get('/api/users/me/emergency-contacts')
+      .set('Origin', origin)
+      .set('Authorization', `Bearer ${userToken}`);
+
+    expect(listRes.status).toBe(200);
+    const contacts = listRes.body.data.contacts;
+    expect(contacts.length).toBeGreaterThan(0);
+    expect(contacts[0].priority).toBeDefined();
   });
 });
