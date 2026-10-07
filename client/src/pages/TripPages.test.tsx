@@ -115,9 +115,9 @@ describe('trip pages', () => {
     expect(await screen.findByRole('heading', { name: 'Mountain Escape' })).toBeInTheDocument();
     expect(screen.getByText('5 travel days')).toBeInTheDocument();
     await userEvent.setup().click(screen.getByRole('tab', { name: 'Itinerary' }));
-    expect(
-      screen.getByRole('heading', { name: 'Your days will take shape here.' }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Trip Timeline' })).toBeInTheDocument();
+    await userEvent.setup().click(screen.getByRole('tab', { name: 'Expenses' }));
+    expect(screen.getByRole('heading', { name: 'Keep the budget in view.' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /edit trip/i })).toHaveAttribute(
       'href',
       '/trips/trip-one/edit',

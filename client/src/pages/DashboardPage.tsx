@@ -2,6 +2,7 @@ import { ArrowRight, Compass, MapPlus, ShieldCheck, Sparkles } from 'lucide-reac
 import { Link } from 'react-router-dom';
 import { useAuth } from '../store/AuthProvider';
 import { useTrips } from '../services/tripService';
+import { WeatherWidget } from '../components/weather/WeatherWidget';
 import { formatBudget, formatDateRange, tripDuration } from './tripUtils';
 
 function greetingForHour(hour: number): string {
@@ -131,6 +132,21 @@ export function DashboardPage() {
             ) : null}
           </div>
           <div className="dashboard-side-stack">
+            {nextTrip ? (
+              <WeatherWidget
+                latitude={
+                  nextTrip.destinationCoordinates?.latitude ??
+                  nextTrip.destination?.coordinates?.latitude
+                }
+                longitude={
+                  nextTrip.destinationCoordinates?.longitude ??
+                  nextTrip.destination?.coordinates?.longitude
+                }
+                destinationName={nextTrip.destinationName}
+                startDate={nextTrip.startDate}
+                endDate={nextTrip.endDate}
+              />
+            ) : null}
             <section className="dashboard-panel recent-activity-panel">
               <span className="eyebrow">RECENT ACTIVITY</span>
               <h2>A fresh start.</h2>

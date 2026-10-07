@@ -17,6 +17,8 @@ import { travelPhotos } from '../services/imageService';
 import { useDeleteTrip, useTrip, useUpdateTripStatus } from '../services/tripService';
 import type { Trip, TripStatus } from '../types/trip';
 import { TripMapWorkspace } from '../components/places/TripMapWorkspace';
+import { WeatherWidget } from '../components/weather/WeatherWidget';
+import { ItineraryWorkspace } from '../components/itinerary/ItineraryWorkspace';
 import { formatBudget, formatDateRange, formatTripDate, tripDuration } from './tripUtils';
 
 const tabs = [
@@ -199,20 +201,24 @@ function TripOverview({ trip }: { trip: Trip }) {
           ))}
         </ul>
       </section>
+      <WeatherWidget
+        latitude={trip.destinationCoordinates?.latitude ?? trip.destination?.coordinates?.latitude}
+        longitude={
+          trip.destinationCoordinates?.longitude ?? trip.destination?.coordinates?.longitude
+        }
+        destinationName={trip.destinationName}
+        startDate={trip.startDate}
+        endDate={trip.endDate}
+      />
     </div>
   );
 }
 
-function ComingNext({ tab }: { tab: Exclude<TripTab, 'overview' | 'map'> }) {
+function ComingNext({ tab }: { tab: Exclude<TripTab, 'overview' | 'map' | 'itinerary'> }) {
   const labels: Record<
-    Exclude<TripTab, 'overview' | 'map'>,
+    Exclude<TripTab, 'overview' | 'map' | 'itinerary'>,
     { eyebrow: string; title: string; description: string }
   > = {
-    itinerary: {
-      eyebrow: 'ITINERARY',
-      title: 'Your days will take shape here.',
-      description: 'A thoughtful itinerary workspace is planned for a future release.',
-    },
     expenses: {
       eyebrow: 'EXPENSES',
       title: 'Keep the budget in view.',
@@ -379,6 +385,8 @@ export function TripDetailPage() {
             <TripOverview trip={trip} />
           ) : selectedTab === 'map' ? (
             <TripMapWorkspace trip={trip} />
+          ) : selectedTab === 'itinerary' ? (
+            <ItineraryWorkspace trip={trip} />
           ) : (
             <ComingNext tab={selectedTab} />
           )}

@@ -5583,3 +5583,799 @@ img {
     width: 100%;
   }
 }
+
+/* ==========================================================================
+   Phase 5 — Weather & Smart Itinerary Styles
+   ========================================================================== */
+
+/* Weather Widget */
+.weather-widget {
+  background: linear-gradient(145deg, #ffffff 0%, #f7f9f5 100%);
+  border: 1px solid #e1e5dd;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 18px rgba(36, 49, 40, 0.04);
+  margin-top: 24px;
+}
+.weather-widget-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.weather-widget-header h2,
+.weather-widget-header h3 {
+  margin: 4px 0 0;
+  color: #243128;
+  font-family: var(--serif);
+  font-size: 22px;
+}
+.weather-provider-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #3b5a4b;
+  background: #edf3ee;
+  border: 1px solid #d4e0d7;
+  border-radius: 999px;
+}
+.weather-current-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  background: #fbfcf9;
+  border: 1px solid #e6eae2;
+  border-radius: 14px;
+  padding: 20px;
+  align-items: center;
+}
+.weather-current-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.weather-icon-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #eef3ec;
+  color: var(--forest);
+  border: 1px solid #d5e0d4;
+  flex-shrink: 0;
+}
+.weather-temp-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.weather-temp-large {
+  font-size: 34px;
+  font-weight: 700;
+  color: #1e2a22;
+  font-family: var(--serif);
+}
+.weather-feels-like {
+  font-size: 12px;
+  color: #6a796e;
+}
+.weather-condition-label {
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #394b3e;
+}
+.weather-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.weather-metric {
+  background: #ffffff;
+  border: 1px solid #e6eae3;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: #5c6c60;
+  font-size: 11px;
+}
+.weather-metric strong {
+  color: #243128;
+  font-size: 13px;
+}
+.weather-forecast-section {
+  margin-top: 24px;
+}
+.weather-forecast-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: #243128;
+}
+.weather-forecast-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.weather-daily-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+.weather-day-card {
+  background: #ffffff;
+  border: 1px solid #e5e9e1;
+  border-radius: 12px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  transition:
+    transform var(--motion-fast),
+    box-shadow var(--motion-fast);
+}
+.weather-day-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.weather-day-date {
+  font-size: 11px;
+  font-weight: 700;
+  color: #5d6e61;
+}
+.weather-day-icon {
+  color: var(--forest);
+  margin: 4px 0;
+}
+.weather-day-condition {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2b392f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.weather-day-temps {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+}
+.weather-max-temp {
+  font-weight: 700;
+  color: #1e2a22;
+}
+.weather-min-temp {
+  color: #839286;
+}
+.weather-day-rain {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  color: #3b7498;
+  font-weight: 600;
+}
+.weather-distant-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: #f7f8f3;
+  border: 1px solid #e2e6de;
+  border-radius: 12px;
+  color: #4f5f53;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.weather-distant-notice strong {
+  display: block;
+  color: #243128;
+  margin-bottom: 2px;
+}
+.weather-distant-notice p {
+  margin: 0;
+}
+.weather-skeleton,
+.weather-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #637266;
+  font-size: 13px;
+}
+.weather-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ccd4c9;
+  border-top-color: var(--forest);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Itinerary Workspace */
+.itinerary-workspace-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(320px, 1fr);
+  gap: 28px;
+  margin-top: 24px;
+}
+.itinerary-header-card {
+  background: #ffffff;
+  border: 1px solid #e1e5dd;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 18px rgba(36, 49, 40, 0.04);
+}
+.itinerary-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.itinerary-header-top h2 {
+  margin: 4px 0 0;
+  color: #243128;
+  font-family: var(--serif);
+  font-size: 24px;
+}
+.itinerary-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--forest);
+  color: #fffdf6;
+  border: none;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background var(--motion-fast),
+    transform var(--motion-fast);
+}
+.itinerary-add-btn:hover {
+  background: #235246;
+  transform: translateY(-1px);
+}
+.itinerary-progress-box {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #edf1eb;
+}
+.itinerary-progress-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #556659;
+  margin-bottom: 8px;
+}
+.itinerary-progress-text span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.itinerary-progress-track {
+  width: 100%;
+  height: 8px;
+  background: #eaeee8;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.itinerary-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #386b59, #4f8b76);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+/* Day Selector Nav */
+.itinerary-day-nav {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+.itinerary-day-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 16px;
+  background: #ffffff;
+  border: 1px solid #e1e5dc;
+  border-radius: 12px;
+  cursor: pointer;
+  position: relative;
+  min-width: 90px;
+  transition: all var(--motion-fast);
+}
+.itinerary-day-tab:hover {
+  border-color: #bcc6b8;
+  background: #fafbf9;
+}
+.itinerary-day-tab.is-selected {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+}
+.itinerary-day-tab .day-tab-num {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+.itinerary-day-tab .day-tab-date {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.itinerary-day-tab .day-tab-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #d97843;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 2px 6px;
+}
+.itinerary-day-tab.is-selected .day-tab-count {
+  background: #fdfaf6;
+  color: var(--forest);
+}
+
+/* Day Content & Timeline */
+.itinerary-day-content {
+  background: #ffffff;
+  border: 1px solid #e1e5dd;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 18px rgba(36, 49, 40, 0.04);
+}
+.itinerary-day-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #edf1eb;
+  color: #243128;
+}
+.itinerary-day-heading h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+.itinerary-count-pill {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: #607264;
+  background: #f0f3ee;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.itinerary-timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.itinerary-item-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: #fdfdfc;
+  border: 1px solid #e4e8e0;
+  border-radius: 14px;
+  transition: all var(--motion-fast);
+}
+.itinerary-item-card:hover {
+  border-color: #c9d2c5;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+.itinerary-item-card--completed {
+  background: #f6f8f5;
+  border-color: #e5ece3;
+  opacity: 0.8;
+}
+.itinerary-check-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 2px;
+  color: #8c9c8f;
+  display: grid;
+  place-items: center;
+  transition: color var(--motion-fast);
+}
+.itinerary-check-btn:hover {
+  color: var(--forest);
+}
+.itinerary-check-btn.is-completed {
+  color: #2f855a;
+}
+.itinerary-item-body {
+  flex: 1;
+  min-width: 0;
+}
+.itinerary-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.itinerary-time-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #3b5547;
+  background: #eaf1ec;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.itinerary-category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.itinerary-category-pill.cat-food {
+  background: #fef3e7;
+  color: #aa5c1d;
+}
+.itinerary-category-pill.cat-sightseeing {
+  background: #eef2fa;
+  color: #2d4f87;
+}
+.itinerary-category-pill.cat-travel {
+  background: #f5edf7;
+  color: #7b3887;
+}
+.itinerary-category-pill.cat-lodging {
+  background: #edf7f4;
+  color: #277764;
+}
+.itinerary-category-pill.cat-activity,
+.itinerary-category-pill.cat-other {
+  background: #f0f3ee;
+  color: #495d4e;
+}
+.itinerary-item-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #223026;
+  line-height: 1.4;
+}
+.itinerary-item-card--completed .itinerary-item-title {
+  text-decoration: line-through;
+  color: #7b8b7e;
+}
+.itinerary-item-location {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #5d6e61;
+}
+.itinerary-item-notes {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #6a796e;
+  line-height: 1.5;
+  background: #f7f9f5;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border-left: 3px solid #ced8cb;
+}
+.itinerary-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.itinerary-order-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.itinerary-icon-action {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  display: grid;
+  place-items: center;
+  color: #728275;
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+.itinerary-icon-action:hover:not(:disabled) {
+  background: #eef3ec;
+  border-color: #d1ded0;
+  color: #223026;
+}
+.itinerary-icon-action:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.itinerary-icon-action--delete:hover {
+  background: #faebe8 !important;
+  border-color: #ecd0c9 !important;
+  color: #a43827 !important;
+}
+
+/* Activity Suggestions Sidebar */
+.activity-suggestions-panel {
+  background: #ffffff;
+  border: 1px solid #e1e5dd;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 4px 18px rgba(36, 49, 40, 0.04);
+}
+.activity-suggestions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.activity-suggestions-header h3 {
+  margin: 4px 0 0;
+  font-family: var(--serif);
+  font-size: 18px;
+  color: #243128;
+}
+.suggestions-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #276749;
+  background: #e6f4ea;
+  padding: 3px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.suggestions-category-chips {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.suggestion-chip {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: #f2f5f0;
+  border: 1px solid #e1e6de;
+  color: #4b5e50;
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+.suggestion-chip:hover {
+  border-color: #b8c4b4;
+}
+.suggestion-chip.is-active {
+  background: #244b3c;
+  border-color: #244b3c;
+  color: #ffffff;
+}
+.suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 580px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.suggestion-place-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: #fcfdfb;
+  border: 1px solid #e5eae1;
+  border-radius: 12px;
+  transition: all var(--motion-fast);
+}
+.suggestion-place-card:hover {
+  border-color: #cad6c5;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.suggestion-place-info {
+  flex: 1;
+  min-width: 0;
+}
+.suggestion-place-info h4 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #223026;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.suggestion-place-address {
+  margin: 3px 0 0;
+  font-size: 11px;
+  color: #6c7d70;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.suggestion-place-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 10px;
+}
+.suggestion-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #b7791f;
+  font-weight: 700;
+}
+.suggestion-distance {
+  color: #7b8c80;
+}
+.suggestion-category-tag {
+  color: #4b6251;
+  text-transform: capitalize;
+  background: #edf2ea;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.add-to-itinerary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #eef4ec;
+  border: 1px solid #d3ded1;
+  color: #275645;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--motion-fast);
+}
+.add-to-itinerary-btn:hover {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #ffffff;
+}
+
+/* Itinerary Modal */
+.itinerary-modal {
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.16);
+  padding: 28px;
+  width: 100%;
+  max-width: 540px;
+  border: 1px solid #dfe5dc;
+}
+.itinerary-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.itinerary-modal-header h2 {
+  margin: 4px 0 0;
+  font-family: var(--serif);
+  font-size: 22px;
+  color: #243128;
+}
+.itinerary-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.itinerary-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #edf1eb;
+}
+.itinerary-submit-btn {
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: var(--forest);
+  color: #fffdf6;
+  border: none;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background var(--motion-fast);
+}
+.itinerary-submit-btn:hover:not(:disabled) {
+  background: #235246;
+}
+
+/* Dedicated Itinerary Page */
+.trip-itinerary-page {
+  padding-top: 86px;
+  padding-bottom: 56px;
+}
+.trip-itinerary-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 12px 0 24px;
+  flex-wrap: wrap;
+}
+.trip-itinerary-header h1 {
+  margin: 4px 0 0;
+  color: #243128;
+  font-family: var(--serif);
+  font-size: 28px;
+}
+
+/* Responsive Rules for Weather & Itinerary */
+@media (max-width: 1024px) {
+  .itinerary-workspace-layout {
+    grid-template-columns: 1fr;
+  }
+  .weather-current-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .form-row-2 {
+    grid-template-columns: 1fr;
+  }
+  .weather-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .itinerary-header-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .itinerary-add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

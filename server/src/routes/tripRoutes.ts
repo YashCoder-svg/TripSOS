@@ -8,9 +8,11 @@ import {
   updateTripSchema,
   updateTripStatusSchema,
 } from '../validators/tripValidators.js';
+import { itineraryRoutes } from './itineraryRoutes.js';
 
 export const tripRoutes = Router();
 tripRoutes.use(requireAuth);
+tripRoutes.use('/:tripId/itinerary', itineraryRoutes);
 
 function dateStatus(
   startDate: string,

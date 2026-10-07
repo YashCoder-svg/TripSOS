@@ -11,6 +11,7 @@ import { authRoutes } from './routes/authRoutes.js';
 import { userRoutes } from './routes/userRoutes.js';
 import { tripRoutes } from './routes/tripRoutes.js';
 import { placeRoutes } from './routes/placeRoutes.js';
+import { weatherRoutes } from './routes/weatherRoutes.js';
 
 export const app = express();
 app.disable('x-powered-by');
@@ -57,5 +58,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/places', placeRoutes);
+app.use('/api/weather', weatherRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
