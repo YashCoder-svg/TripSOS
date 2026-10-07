@@ -26,6 +26,12 @@ const TripMapPage = lazy(() =>
 const TripItineraryPage = lazy(() =>
   import('../pages/TripItineraryPage').then((module) => ({ default: module.TripItineraryPage })),
 );
+const TripExpensesPage = lazy(() =>
+  import('../pages/TripExpensesPage').then((module) => ({ default: module.TripExpensesPage })),
+);
+const TripGroupPage = lazy(() =>
+  import('../pages/TripGroupPage').then((module) => ({ default: module.TripGroupPage })),
+);
 const ExplorePage = lazy(() =>
   import('../pages/ExplorePage').then((module) => ({ default: module.ExplorePage })),
 );
@@ -147,6 +153,22 @@ export const router = createBrowserRouter([
         element: protect(
           <LazyRoute>
             <TripItineraryPage />
+          </LazyRoute>,
+        ),
+      },
+      {
+        path: '/trips/:tripId/expenses',
+        element: protect(
+          <LazyRoute>
+            <TripExpensesPage />
+          </LazyRoute>,
+        ),
+      },
+      {
+        path: '/trips/:tripId/group',
+        element: protect(
+          <LazyRoute>
+            <TripGroupPage />
           </LazyRoute>,
         ),
       },

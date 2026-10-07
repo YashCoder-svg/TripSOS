@@ -9,10 +9,16 @@ import {
   updateTripStatusSchema,
 } from '../validators/tripValidators.js';
 import { itineraryRoutes } from './itineraryRoutes.js';
+import { memberRoutes } from './memberRoutes.js';
+import { expenseRoutes } from './expenseRoutes.js';
+import { TripMember } from '../models/TripMember.js';
+import { assertTripAccess } from './tripAuthHelper.js';
 
 export const tripRoutes = Router();
 tripRoutes.use(requireAuth);
 tripRoutes.use('/:tripId/itinerary', itineraryRoutes);
+tripRoutes.use('/:tripId/members', memberRoutes);
+tripRoutes.use('/:tripId/expenses', expenseRoutes);
 
 function dateStatus(
   startDate: string,
@@ -49,6 +55,13 @@ tripRoutes.post('/', async (req, res, next) => {
   try {
     const input = createTripSchema.parse(req.body);
     const trip = await Trip.create({ ...input, owner: req.auth!.userId });
+    await TripMember.create({
+      trip: trip._id,
+      user: req.auth!.userId,
+      role: 'owner',
+      status: 'active',
+      joinedAt: new Date(),
+    });
     res.status(201).json({ success: true, data: { trip: serializeTrip(trip) } });
   } catch (error) {
     next(error);
@@ -57,7 +70,14 @@ tripRoutes.post('/', async (req, res, next) => {
 
 tripRoutes.get('/', async (req, res, next) => {
   try {
-    const trips = await Trip.find({ owner: req.auth!.userId }).sort({
+    const memberTripIds = await TripMember.find({
+      user: req.auth!.userId,
+      status: 'active',
+    }).distinct('trip');
+
+    const trips = await Trip.find({
+      $or: [{ owner: req.auth!.userId }, { _id: { $in: memberTripIds } }],
+    }).sort({
       startDate: 1,
       createdAt: -1,
     });
@@ -70,8 +90,7 @@ tripRoutes.get('/', async (req, res, next) => {
 tripRoutes.get('/:tripId', async (req, res, next) => {
   try {
     assertTripId(req.params.tripId!);
-    const trip = await Trip.findOne({ _id: req.params.tripId, owner: req.auth!.userId });
-    if (!trip) throw new AppError(404, 'TRIP_NOT_FOUND', 'Trip not found.');
+    const { trip } = await assertTripAccess(req.params.tripId!, req.auth!.userId);
     res.json({ success: true, data: { trip: serializeTrip(trip) } });
   } catch (error) {
     next(error);

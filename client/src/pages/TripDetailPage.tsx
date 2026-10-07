@@ -19,6 +19,8 @@ import type { Trip, TripStatus } from '../types/trip';
 import { TripMapWorkspace } from '../components/places/TripMapWorkspace';
 import { WeatherWidget } from '../components/weather/WeatherWidget';
 import { ItineraryWorkspace } from '../components/itinerary/ItineraryWorkspace';
+import { ExpenseWorkspace } from '../components/expenses/ExpenseWorkspace';
+import { GroupWorkspace } from '../components/group/GroupWorkspace';
 import { formatBudget, formatDateRange, formatTripDate, tripDuration } from './tripUtils';
 
 const tabs = [
@@ -387,6 +389,10 @@ export function TripDetailPage() {
             <TripMapWorkspace trip={trip} />
           ) : selectedTab === 'itinerary' ? (
             <ItineraryWorkspace trip={trip} />
+          ) : selectedTab === 'expenses' ? (
+            <ExpenseWorkspace trip={trip} />
+          ) : selectedTab === 'group' ? (
+            <GroupWorkspace trip={trip} />
           ) : (
             <ComingNext tab={selectedTab} />
           )}

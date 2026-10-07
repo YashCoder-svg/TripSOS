@@ -31,6 +31,37 @@ vi.mock('../services/tripService', () => ({
   useUpdateTripStatus: () => ({ mutateAsync: hooks.updateStatusMutateAsync, isPending: false }),
 }));
 
+vi.mock('../services/expenseService', () => ({
+  useTripExpenses: () => ({
+    data: {
+      expenses: [],
+      summary: {
+        totalExpense: 0,
+        currency: 'INR',
+        memberBalances: [],
+        settlements: [],
+      },
+    },
+    isLoading: false,
+  }),
+  useCreateExpense: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useDeleteExpense: () => ({ mutateAsync: vi.fn(), isPending: false }),
+}));
+
+vi.mock('../services/groupService', () => ({
+  useTripMembers: () => ({
+    data: {
+      members: [],
+      tripOwnerId: 'user-1',
+    },
+    isLoading: false,
+  }),
+  useInviteTripMember: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useJoinTrip: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useRemoveTripMember: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useLeaveTrip: () => ({ mutateAsync: vi.fn(), isPending: false }),
+}));
+
 const trip: Trip = {
   _id: 'trip-one',
   name: 'Mountain Escape',
@@ -117,7 +148,9 @@ describe('trip pages', () => {
     await userEvent.setup().click(screen.getByRole('tab', { name: 'Itinerary' }));
     expect(screen.getByRole('heading', { name: 'Trip Timeline' })).toBeInTheDocument();
     await userEvent.setup().click(screen.getByRole('tab', { name: 'Expenses' }));
-    expect(screen.getByRole('heading', { name: 'Keep the budget in view.' })).toBeInTheDocument();
+    expect(screen.getByText(/TOTAL TRIP SPENDING/i)).toBeInTheDocument();
+    await userEvent.setup().click(screen.getByRole('tab', { name: 'Group' }));
+    expect(screen.getByText(/Trip Travelers/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /edit trip/i })).toHaveAttribute(
       'href',
       '/trips/trip-one/edit',
