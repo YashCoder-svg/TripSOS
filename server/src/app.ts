@@ -14,13 +14,15 @@ import { placeRoutes } from './routes/placeRoutes.js';
 import { weatherRoutes } from './routes/weatherRoutes.js';
 import { emergencyRoutes } from './routes/emergencyRoutes.js';
 import { aiRoutes } from './routes/aiRoutes.js';
+import { savedPlaceRoutes } from './routes/savedPlaceRoutes.js';
+import { notificationRoutes } from './routes/notificationRoutes.js';
 
 export const app = express();
 app.disable('x-powered-by');
 app.use(helmet());
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
 app.use(express.json({ limit: '100kb' }));
-app.use(['/api/auth', '/api/users'], (_req, res, next) => {
+app.use(['/api/auth', '/api/users', '/api/saved-places', '/api/notifications'], (_req, res, next) => {
   res.setHeader('Cache-Control', 'no-store');
   next();
 });
@@ -63,5 +65,7 @@ app.use('/api/places', placeRoutes);
 app.use('/api/weather', weatherRoutes);
 app.use('/api/emergency', emergencyRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/saved-places', savedPlaceRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);

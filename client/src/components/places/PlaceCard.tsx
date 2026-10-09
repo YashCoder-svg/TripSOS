@@ -1,5 +1,6 @@
 import {
   Bed,
+  Bookmark,
   Coffee,
   Fuel,
   Grid,
@@ -23,6 +24,8 @@ export interface PlaceCardProps {
   isSelected?: boolean;
   onSelect?: () => void;
   onViewDetails?: () => void;
+  onSave?: (place: PlaceSummary) => void;
+  isSaved?: boolean;
   className?: string;
 }
 
@@ -46,6 +49,8 @@ export function PlaceCard({
   isSelected = false,
   onSelect,
   onViewDetails,
+  onSave,
+  isSaved = false,
   className = '',
 }: PlaceCardProps) {
   const meta = place.category ? CATEGORY_METADATA[place.category] : null;
@@ -69,9 +74,25 @@ export function PlaceCard({
       aria-label={`${place.name}, ${meta?.label || 'Place'}`}
     >
       <div className="place-card__header">
-        <div className="place-card__badge" style={{ backgroundColor: meta?.badgeBg || '#f1f5f9' }}>
-          <Icon size={14} style={{ color: meta?.color || '#475569' }} aria-hidden="true" />
-          <span style={{ color: meta?.color || '#475569' }}>{meta?.label || 'Place'}</span>
+        <div className="flex items-center gap-2">
+          <div className="place-card__badge" style={{ backgroundColor: meta?.badgeBg || '#f1f5f9' }}>
+            <Icon size={14} style={{ color: meta?.color || '#475569' }} aria-hidden="true" />
+            <span style={{ color: meta?.color || '#475569' }}>{meta?.label || 'Place'}</span>
+          </div>
+          {onSave && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onSave(place);
+              }}
+              className="p-1 rounded text-slate-400 hover:text-amber-400 transition"
+              aria-label={isSaved ? `Unsave ${place.name}` : `Save ${place.name}`}
+              title={isSaved ? 'Saved to bookmarks' : 'Save place'}
+            >
+              <Bookmark size={13} className={isSaved ? 'fill-amber-400 text-amber-400' : ''} />
+            </button>
+          )}
         </div>
 
         {formattedDistance && <span className="place-card__distance">{formattedDistance}</span>}
