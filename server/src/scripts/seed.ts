@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import argon2 from 'argon2';
-import { connectToDatabase } from '../config/mongodb.js';
+import { connectToDatabase, disconnectDatabase } from '../config/mongodb.js';
 import { User } from '../models/User.js';
 import { Trip } from '../models/Trip.js';
 import { TripMember } from '../models/TripMember.js';
@@ -48,8 +48,8 @@ async function seed() {
     language: 'en',
     travelPreferences: {
       travelStyle: 'adventure',
-      preferredCurrency: 'INR',
-      dietary: ['Vegetarian'],
+      budgetPreference: 'moderate',
+      dietaryPreferences: ['Vegetarian'],
     },
   });
 
@@ -59,8 +59,8 @@ async function seed() {
     passwordHash,
     language: 'en',
     travelPreferences: {
-      travelStyle: 'budget',
-      preferredCurrency: 'INR',
+      travelStyle: 'nature',
+      budgetPreference: 'budget',
     },
   });
 
@@ -70,8 +70,8 @@ async function seed() {
     passwordHash,
     language: 'en',
     travelPreferences: {
-      travelStyle: 'comfort',
-      preferredCurrency: 'INR',
+      travelStyle: 'food',
+      budgetPreference: 'moderate',
     },
   });
 
@@ -80,7 +80,7 @@ async function seed() {
     {
       userId: traveler._id,
       name: 'Rohit Verma',
-      relationship: 'Brother',
+      relationship: 'family',
       phone: '+91 98100 12345',
       isPrimary: true,
       priority: 1,
@@ -88,7 +88,7 @@ async function seed() {
     {
       userId: traveler._id,
       name: 'Dr. Ananya Sen',
-      relationship: 'Physician / Emergency',
+      relationship: 'other',
       phone: '+91 98200 54321',
       isPrimary: false,
       priority: 2,
@@ -294,7 +294,7 @@ async function seed() {
   console.log('   Trip Code: TRP-82K7');
   console.log('=============================================\n');
 
-  await mongoose.disconnect();
+  await disconnectDatabase();
 }
 
 seed().catch((err) => {
