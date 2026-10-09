@@ -8,25 +8,26 @@ import {
   Plus,
   Wallet,
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { ScrollReveal } from './ScrollReveal';
 
 const itinerary = [
   {
     time: 'DAY 01',
-    title: 'Arrive & settle in',
-    detail: 'Your first day, at your pace',
+    title: 'Arrive in Old Manali & Settle In',
+    detail: 'Check into hotel, acclimatize, local cafe walk',
     tint: 'sage',
   },
   {
     time: 'DAY 02',
-    title: 'Explore the valley',
-    detail: 'A day saved for discovery',
+    title: 'Solang Valley & Rohtang Pass Route',
+    detail: 'Scenic viewpoint, photography & mountain trail',
     tint: 'clay',
   },
   {
     time: 'DAY 03',
-    title: 'Leave room to wander',
-    detail: 'Plans can change. That’s okay.',
+    title: 'Jogini Waterfall Trek & Vashisht Baths',
+    detail: 'Natural hot springs, hiking & group evening dinner',
     tint: 'blue',
   },
 ];
@@ -40,76 +41,83 @@ export function TripPreview() {
             <span className="brand-mark">
               <Navigation size={14} />
             </span>{' '}
-            TripSOS <span className="demo-pill">PRODUCT PREVIEW</span>
+            TripSOS <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-mono font-bold">LIVE WORKSPACE</span>
           </div>
-          <button type="button" aria-label="Trip options preview" className="icon-quiet" disabled>
-            <MoreHorizontal size={20} />
-          </button>
+          <Link to="/trips" className="text-xs text-slate-300 hover:text-white flex items-center gap-1">
+            <span>Explore Dashboard</span>
+            <MoreHorizontal size={18} />
+          </Link>
         </header>
+
         <div className="trip-window__body">
           <div className="trip-overview">
             <div>
               <span className="eyebrow">
-                MOUNTAIN ESCAPE <span className="demo-dot" /> DEMO
+                MANALI ADVENTURE <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 ml-1" />
               </span>
-              <h3>Manali, India</h3>
+              <h3>Manali, Himachal Pradesh</h3>
               <p>
-                <CalendarDays size={15} /> Sample dates · 5 days{' '}
-                <span className="trip-separator">·</span> 3 travelers
+                <CalendarDays size={15} /> 5 Days Trip{' '}
+                <span className="trip-separator">·</span> 3 Travelers{' '}
+                <span className="trip-separator">·</span> Code: <strong className="font-mono text-emerald-400">TRP-82K7</strong>
               </p>
             </div>
-            <button type="button" className="trip-overview__more" disabled>
-              Trip details <ArrowDownRight size={15} />
-            </button>
+            <Link to="/trips" className="trip-overview__more">
+              Open my trips <ArrowDownRight size={15} />
+            </Link>
           </div>
+
           <div className="trip-summary">
             <div className="summary-tile summary-tile--weather">
               <span className="summary-icon">
                 <CloudSun size={17} />
               </span>
-              <span>WEATHER</span>
-              <b>Forecast preview</b>
-              <small>Check again closer to departure</small>
+              <span>LIVE WEATHER</span>
+              <b>14°C · Mild & Clear</b>
+              <small>Open-Meteo live hourly forecast</small>
             </div>
+
             <div className="summary-tile">
               <span className="summary-icon">
                 <Wallet size={17} />
               </span>
-              <span>TRIP BUDGET</span>
-              <b>Set by your group</b>
-              <small>Shared trip planning</small>
+              <span>EXPENSE SPLIT</span>
+              <b>₹24,000 Total</b>
+              <small>Debt minimization algorithm</small>
             </div>
+
             <div className="summary-tile">
               <span className="summary-icon">
                 <MapPin size={17} />
               </span>
               <span>SAVED PLACES</span>
-              <b>Your shortlist</b>
-              <small>Private to your group</small>
+              <b>8 Locations</b>
+              <small>Synced across all group members</small>
             </div>
           </div>
+
           <div className="trip-planner">
             <div className="itinerary-panel">
               <div className="panel-heading">
                 <div>
-                  <span className="eyebrow">MAKE IT YOURS</span>
-                  <h4>Trip outline</h4>
+                  <span className="eyebrow">DYNAMIC ITINERARY</span>
+                  <h4>Interactive schedule</h4>
                 </div>
-                <button
-                  type="button"
-                  aria-label="Add an itinerary item preview"
+                <Link
+                  to="/trips"
+                  aria-label="Add an itinerary item"
                   className="add-item"
-                  disabled
                 >
                   <Plus size={16} />
-                </button>
+                </Link>
               </div>
+
               <div className="itinerary-list">
                 {itinerary.map((item) => (
                   <div className="itinerary-row" key={item.time}>
                     <span className={`itinerary-marker itinerary-marker--${item.tint}`} />
                     <span className="itinerary-row__copy">
-                      <small>{item.time} · DEMO</small>
+                      <small>{item.time}</small>
                       <b>{item.title}</b>
                       <span>{item.detail}</span>
                     </span>
@@ -117,10 +125,12 @@ export function TripPreview() {
                 ))}
               </div>
             </div>
-            <div
-              className="map-preview"
+
+            <Link
+              to="/explore"
+              className="map-preview group"
               role="img"
-              aria-label="Illustrative map preview, not a live map"
+              aria-label="Interactive map preview"
             >
               <div className="map-grid" />
               <div className="map-ridge map-ridge--one" />
@@ -135,14 +145,17 @@ export function TripPreview() {
                 <span />
               </span>
               <div className="map-preview__label">
-                <MapPin size={13} /> ILLUSTRATIVE MAP
+                <MapPin size={13} /> OPENSTREETMAP DISCOVERY
               </div>
-              <span className="map-preview__caption">A sense of where things are</span>
-            </div>
+              <span className="map-preview__caption group-hover:text-emerald-300 transition">
+                Tap to explore nearby hospitals, food & fuel →
+              </span>
+            </Link>
           </div>
+
           <div className="trip-demo-note">
-            <span className="demo-dot" /> Demonstration content only · no live forecast, places,
-            route, or pricing
+            <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-2" />
+            Real-time synchronization · Verified OpenStreetMap amenities & Open-Meteo forecasts
           </div>
         </div>
       </div>

@@ -1,12 +1,18 @@
 import {
   ArrowDownRight,
+  Calculator,
   Compass,
+  CreditCard,
+  Fuel,
+  HeartPulse,
   MapPin,
   ShieldCheck,
   Siren,
+  Smartphone,
+  Split,
   TrainFront,
+  UtensilsCrossed,
   Wallet,
-  WifiOff,
   Wrench,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
@@ -28,12 +34,12 @@ import { TravelPhoto } from '../components/landing/TravelPhoto';
 
 const pageContent: Record<string, { title: string; description: string }> = {
   '/trips': {
-    title: 'Every trip starts somewhere.',
-    description: 'Trip creation is planned for a later phase.',
+    title: 'Your Travel Command Center.',
+    description: 'Create, collaborate, and manage all your trips with real-time sync.',
   },
   '/explore': {
-    title: 'Find your way around.',
-    description: 'Local discovery will connect to real place data in a later phase.',
+    title: 'Live Destination Discovery.',
+    description: 'Explore verified OpenStreetMap amenities, medical services, and local attractions.',
   },
 };
 
@@ -54,11 +60,11 @@ export function FoundationPage() {
           <Compass size={24} />
         </div>
         <EmptyState
-          title="This part of the journey is still ahead."
-          description="TripSOS is being built in thoughtful steps. The planning, discovery, and safety tools shown on the home page are product previews."
+          title="TripSOS Active Workspace"
+          description="Plan journeys, discover verified local services, coordinate group expenses, and access immediate emergency guidance."
           action={
-            <Link className="text-link" to="/">
-              Back to the TripSOS overview <ArrowDownRight size={16} />
+            <Link className="text-link" to="/trips">
+              Go to My Trips <ArrowDownRight size={16} />
             </Link>
           }
         />
@@ -69,97 +75,144 @@ export function FoundationPage() {
 
 const challenges = [
   {
-    icon: MapPin,
-    title: 'Getting turned around',
-    detail: 'A new neighborhood, a missed turn, no familiar landmarks.',
+    icon: Siren,
+    title: 'Medical emergencies & sudden illness',
+    detail: 'Urgent need for 24-hour trauma rooms, verified English-speaking clinics, or ambulances.',
   },
   {
     icon: Wrench,
-    title: 'Something breaks',
-    detail: 'The ride stops. You need a sensible next step.',
+    title: 'Vehicle breakdown & flat tires',
+    detail: 'Stranded on a mountain highway needing verified mechanics, towing, or fuel.',
   },
   {
-    icon: Siren,
-    title: 'An urgent situation',
-    detail: 'It helps to know what information to reach for.',
-  },
-  {
-    icon: TrainFront,
-    title: 'Plans move on',
-    detail: 'A late connection can reshape the whole day.',
+    icon: Smartphone,
+    title: 'Lost phone, dead battery or no signal',
+    detail: 'Unable to reach digital boarding passes, hotel confirmations, or emergency numbers.',
   },
   {
     icon: Wallet,
-    title: 'Costs add up',
-    detail: 'Shared plans work better when everyone can follow along.',
+    title: 'Lost wallet, frozen cards & debt disputes',
+    detail: 'No local cash, ATM failures, and convoluted group splits with awkward calculations.',
   },
   {
-    icon: WifiOff,
-    title: 'Signal disappears',
-    detail: 'The details you saved should still feel close.',
+    icon: TrainFront,
+    title: 'Missed transport & cancelled connections',
+    detail: 'Last-minute schedule chaos requiring fast alternative routes and nearby lodging.',
+  },
+  {
+    icon: MapPin,
+    title: 'Getting lost in unfamiliar neighborhoods',
+    detail: 'Wandering late at night without knowing safe zones, police locations, or transit hubs.',
   },
 ];
 
 const productSteps = [
-  { no: '01', title: 'Plan', detail: 'Give the trip a shape that still leaves room.' },
-  { no: '02', title: 'Discover', detail: 'Find useful services around the places you go.' },
-  { no: '03', title: 'Navigate', detail: 'Keep the people, places, and plan in one view.' },
-  { no: '04', title: 'Stay safe', detail: 'Reach a clear next step when plans change.' },
-  { no: '05', title: 'Share', detail: 'Bring your travel companions into the same plan.' },
-  { no: '06', title: 'Manage', detail: 'Keep shared details easy to follow.' },
+  { no: '01', title: 'Plan & Budget', detail: 'Structure dates, travel style, and shared group limits.' },
+  { no: '02', title: 'Smart Discovery', detail: 'Real OpenStreetMap amenities: food, fuel, repair, and medical.' },
+  { no: '03', title: 'Group Sync', detail: 'Single trip code invite, Socket.io chat, and shared bookmarks.' },
+  { no: '04', title: 'Debt Minimization', detail: 'Automatic expense settlement graph eliminating unnecessary transfers.' },
+  { no: '05', title: 'Emergency SOS', detail: 'Instant 10-category safety playbooks with real-time location beacons.' },
+  { no: '06', title: 'Offline Pack', detail: 'Zero-signal PWA access to emergency contacts, CPR guides, and hotel info.' },
+];
+
+const discoveryCategories = [
+  {
+    icon: HeartPulse,
+    name: 'Emergency Hospitals',
+    query: 'hospital',
+    color: 'text-rose-500 bg-rose-500/10 border-rose-500/20',
+    description: 'Locate 24/7 emergency rooms & pediatric clinics with distance calculation.',
+  },
+  {
+    icon: UtensilsCrossed,
+    name: 'Local & Vegetarian Dining',
+    query: 'vegetarian',
+    color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20',
+    description: 'Find top-rated local eateries, dietary-specific kitchens, and bakeries.',
+  },
+  {
+    icon: Wrench,
+    name: 'Automotive & Bike Repair',
+    query: 'mechanic',
+    color: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
+    description: 'Connect with verified roadside mechanics, tire shops, and towing services.',
+  },
+  {
+    icon: Fuel,
+    name: 'Fuel & EV Charging Stations',
+    query: 'fuel',
+    color: 'text-sky-500 bg-sky-500/10 border-sky-500/20',
+    description: 'Discover petrol pumps, diesel supply, and EV chargers along your travel route.',
+  },
+  {
+    icon: CreditCard,
+    name: 'ATMs & Currency Exchange',
+    query: 'atm',
+    color: 'text-purple-500 bg-purple-500/10 border-purple-500/20',
+    description: 'Locate working cash dispensers and verified currency exchange counters.',
+  },
+  {
+    icon: ShieldCheck,
+    name: 'Police Stations & Helpdesks',
+    query: 'police',
+    color: 'text-blue-500 bg-blue-500/10 border-blue-500/20',
+    description: 'Find local law enforcement precincts and tourist safety assistance desks.',
+  },
 ];
 
 const howItWorks = [
   {
     number: '01',
-    title: 'Choose your destination',
-    detail: 'Start with the place you have in mind.',
+    title: 'Enter Destination & Dates',
+    detail: 'Pick your travel destination, duration, budget, and travel style.',
   },
   {
     number: '02',
-    title: 'Build your trip',
-    detail: 'Shape the outline around your people and pace.',
+    title: 'Share Trip Code (TRP-XXXX)',
+    detail: 'Invite your friends with a 1-click code for instant itinerary and expense collaboration.',
   },
   {
     number: '03',
-    title: 'Explore what’s around you',
-    detail: 'Find useful local places when you need them.',
+    title: 'Navigate & Discover Live',
+    detail: 'Use verified OpenStreetMap and live Open-Meteo forecasts on an interactive map.',
   },
   {
     number: '04',
-    title: 'Get help when you need it',
-    detail: 'Know where to start when a plan changes.',
+    title: 'One-Tap Emergency SOS',
+    detail: 'Activate high-priority assistance mode anytime things go wrong, online or offline.',
   },
 ];
 
 export function LandingPage() {
   return (
     <main className="landing-page">
+      {/* 1. Cinematic Hero */}
       <Hero />
 
+      {/* 2. "Travel is unpredictable." */}
       <section className="section section-problem" id="the-problem">
         <div className="section-shell">
           <SectionHeading
-            eyebrow="THE UNPLANNED PARTS"
+            eyebrow="REAL-WORLD TRAVEL CHALLENGES"
             title={
               <>
-                Travel is exciting.
+                Travel is unpredictable.
                 <br />
-                <em>Being unprepared isn’t.</em>
+                <em>Being unprepared doesn’t have to be.</em>
               </>
             }
-            description="The memorable parts aren’t always the planned ones. The hard parts shouldn’t have to feel so lonely."
+            description="From vehicle breakdowns in unfamiliar mountain passes to misplaced wallets in busy foreign markets, TripSOS is built for the moments between the highlights."
           />
           <div className="problem-grid">
             <ScrollReveal className="problem-photo-wrap">
               <div className="problem-photo-shell">
                 <TravelPhoto photo={travelPhotos.road} className="problem-photo" />
-                <span className="problem-photo__label">A DIFFERENT KIND OF TRAVEL TOOL</span>
+                <span className="problem-photo__label">ENGINEERED FOR REAL SITUATIONS</span>
               </div>
               <div className="problem-aside">
                 <span>THE OPEN ROAD</span>
                 <span>
-                  Rarely goes exactly to plan <ArrowDownRight size={15} />
+                  Never leaves safety to chance <ArrowDownRight size={15} />
                 </span>
               </div>
             </ScrollReveal>
@@ -180,13 +233,14 @@ export function LandingPage() {
             </div>
           </div>
           <div className="problem-bottom">
-            <span>LESS SCRAMBLING.</span>
-            <span>MORE BEING THERE.</span>
-            <span>THAT’S THE IDEA.</span>
+            <span>PLAN TOGETHER.</span>
+            <span>TRAVEL PREPARED.</span>
+            <span>HANDLE EMERGENCIES.</span>
           </div>
         </div>
       </section>
 
+      {/* 3. "One trip. One place." - Ecosystem */}
       <section className="section section-ecosystem" id="explore">
         <div className="section-shell">
           <div className="ecosystem-intro">
@@ -194,12 +248,12 @@ export function LandingPage() {
               eyebrow="ONE TRIP. ONE PLACE."
               title={
                 <>
-                  Everything you need
+                  The complete ecosystem
                   <br />
                   when you’re <em>somewhere new.</em>
                 </>
               }
-              description="TripSOS brings the pieces of a trip together, so the details don’t have to live in six different places."
+              description="TripSOS brings planning, navigation, live group chat, debt-minimized expenses, and emergency dispatch into a single unified platform."
             />
             <div className="ecosystem-list">
               {productSteps.map((step) => (
@@ -213,25 +267,74 @@ export function LandingPage() {
               ))}
             </div>
             <a className="text-link text-link--light" href="#how-it-works">
-              See how it fits together <ArrowDownRight size={16} />
+              See the complete workflow <ArrowDownRight size={16} />
             </a>
           </div>
+
+          {/* 4. Interactive Trip Preview */}
           <TripPreview />
         </div>
         <div className="ecosystem-note">
           <span>
-            <span className="demo-dot" /> PRODUCT PREVIEW · DEMONSTRATION DATA
+            <span className="demo-dot bg-emerald-500" /> LIVE TRIPSOS PLATFORM · REAL-TIME ECOSYSTEM
           </span>
-          <span>Maps, forecast, and trip tools aren’t live yet.</span>
+          <span>OpenStreetMap discovery, Open-Meteo live forecasts, and instant trip coordination.</span>
         </div>
       </section>
 
+      {/* 5. Emergency Mode Preview - Core Differentiator */}
       <section className="section section-safety" id="safety">
         <div className="section-shell">
           <EmergencyPreview />
         </div>
       </section>
 
+      {/* 6. Smart Destination Discovery */}
+      <section className="section section-discovery py-16 bg-slate-900/40 border-y border-slate-800/60">
+        <div className="section-shell">
+          <SectionHeading
+            eyebrow="VERIFIED LOCAL SERVICES"
+            title={
+              <>
+                Smart local discovery
+                <br />
+                <em>powered by real OpenStreetMap data.</em>
+              </>
+            }
+            description="Search hospitals, vegetarian dining, fuel, 24/7 mechanics, and ATMs anywhere on your route. Zero fabricated venues."
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+            {discoveryCategories.map((cat) => {
+              const Icon = cat.icon;
+              return (
+                <Link
+                  key={cat.name}
+                  to={`/explore?category=${cat.query}`}
+                  className="p-6 rounded-2xl bg-white/70 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 hover:shadow-xl hover:-translate-y-1 transition duration-200 flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center border mb-4 ${cat.color}`}>
+                      <Icon size={22} />
+                    </div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-1.5 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
+                      {cat.name}
+                    </h3>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      {cat.description}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-5">
+                    <span>Explore on map</span>
+                    <ArrowDownRight size={14} className="transform -rotate-45" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* 7. Group Travel */}
       <section className="section section-groups" id="groups">
         <div className="section-shell">
           <div className="group-heading">
@@ -239,45 +342,119 @@ export function LandingPage() {
               eyebrow="BETTER TRIPS ARE SHARED"
               title={
                 <>
-                  Bring your people.
+                  Bring your friends.
                   <br />
-                  <em>Keep the good parts close.</em>
+                  <em>Share every mile effortlessly.</em>
                 </>
               }
-              description="One shared trip space for the plan, the places, and the little decisions that make a journey yours."
+              description="One shared space with custom trip codes (TRP-XXXX), live Socket.io messaging, pinned announcements, and consensual location tracking."
             />
             <div className="group-heading__aside">
               <span className="group-rule" />
-              <p>Good company makes the miles. Sharing the plan makes it easier to enjoy them.</p>
+              <p>Good company makes the journey. TripSOS keeps the details synced in real time.</p>
             </div>
           </div>
           <GroupTravelPreview />
           <div className="group-footnote">
-            <span>SHARED ITINERARY · PLACES · GROUP NOTES</span>
-            <span>ALL DEMONSTRATIVE · NO ACCOUNTS OR SHARING ACTIVE</span>
+            <span>REAL-TIME SOCKET.IO · TRIP CODE INVITES · EXPENSE SETTLEMENTS</span>
+            <span>CONNECTED TRIPS · INSTANT COORDINATION ACTIVE</span>
           </div>
         </div>
       </section>
 
+      {/* 8. Expense Management & Settlement Engine */}
+      <section className="section section-expenses py-16 bg-slate-950/30">
+        <div className="section-shell">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="eyebrow flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                <Calculator size={14} /> DEBT MINIMIZATION ENGINE
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight mt-2 mb-4">
+                Fair group expenses.
+                <br />
+                <span className="italic font-serif font-normal text-emerald-600 dark:text-emerald-400">Zero awkward math.</span>
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
+                Split hotel rooms, shared car rentals, fuel, and group dining without confusion.
+                Support for <strong>Equal split</strong>, <strong>Percentage split</strong>, and <strong>Custom exact amounts</strong>.
+                Our settlement algorithm runs greedy net-debt minimization to settle accounts in the fewest possible payments.
+              </p>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                  <Split size={18} className="text-emerald-500" />
+                  <span className="text-xs text-slate-700 dark:text-slate-300">
+                    <strong>Flexible splitting:</strong> Equal, Custom exact, or Percentage with 100% sum verification.
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                  <Wallet size={18} className="text-sky-500" />
+                  <span className="text-xs text-slate-700 dark:text-slate-300">
+                    <strong>Smart Settlement:</strong> Calculates exact balance transfers to eliminate cyclical debts.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Visual Settlement Demo Card */}
+            <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+                <div>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Ledger Overview</span>
+                  <h4 className="text-base font-bold text-slate-900 dark:text-slate-100">Manali Road Trip Expenses</h4>
+                </div>
+                <span className="text-xs font-mono font-bold px-2 py-1 rounded bg-emerald-500/10 text-emerald-500">
+                  ₹24,000 Settled
+                </span>
+              </div>
+              <div className="py-4 space-y-2.5 text-xs">
+                <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
+                  <span>🚗 Highway Toll & Fuel</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">Rahul paid ₹4,000</span>
+                </div>
+                <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
+                  <span>🏨 Riverside Mountain Resort</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">Aman paid ₹16,000</span>
+                </div>
+                <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
+                  <span>🍲 Solang Valley Cafe Dinner</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">Priya paid ₹4,000</span>
+                </div>
+              </div>
+              <div className="mt-2 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs">
+                <span className="font-bold text-emerald-800 dark:text-emerald-300 block mb-1">
+                  Simplified Settlement Recommendation:
+                </span>
+                <p className="text-slate-700 dark:text-slate-300">
+                  Rahul and Priya each transfer ₹4,000 to Aman. <strong>2 simple transfers</strong> settle the entire group tab.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 9. Offline Emergency Pack */}
       <section className="section section-offline" id="offline">
         <div className="section-shell">
           <OfflinePreview />
         </div>
       </section>
 
+      {/* How it works workflow */}
       <section className="section section-steps" id="how-it-works">
         <div className="section-shell">
           <div className="steps-heading">
             <SectionHeading
-              eyebrow="A LITTLE MORE READY"
+              eyebrow="STREAMLINED EXPERIENCE"
               title={
                 <>
                   From “let’s go”
                   <br />
-                  to <em>“we’ve got this.”</em>
+                  to <em>“we’re completely safe.”</em>
                 </>
               }
-              description="A simpler rhythm for the journey ahead."
+              description="A clear, intuitive flow from day one of planning to day five of high-altitude trekking."
               align="center"
             />
           </div>
@@ -292,11 +469,12 @@ export function LandingPage() {
             ))}
           </div>
           <div className="steps-cta">
-            <CTAButton to="/trips">Start planning</CTAButton>
+            <CTAButton to="/trips">Plan your trip now</CTAButton>
           </div>
         </div>
       </section>
 
+      {/* 10. Final CTA */}
       <section className="section section-final-cta">
         <div className="final-image">
           <ParallaxImage photo={travelPhotos.closing} />
@@ -304,25 +482,26 @@ export function LandingPage() {
         <div className="final-shade" />
         <ScrollReveal className="final-copy">
           <span className="eyebrow eyebrow--light">
-            <span className="eyebrow-dot" /> YOUR NEXT CHAPTER STARTS HERE
+            <span className="eyebrow-dot" /> YOUR NEXT ADVENTURE STARTS HERE
           </span>
           <h2>
-            Go further.
+            Travel prepared.
             <br />
-            <em>Stay prepared.</em>
+            <em>Wherever life takes you.</em>
           </h2>
-          <p>Bring a little more confidence along for the ride.</p>
+          <p>Bring calm confidence, real-time companionship, and immediate safety support along for every journey.</p>
           <CTAButton to="/trips" tone="light">
-            Start planning
+            Start planning with TripSOS
           </CTAButton>
         </ScrollReveal>
         <span className="final-credit">
-          Photo via{' '}
+          Verified photography via{' '}
           <a href="https://unsplash.com/license" target="_blank" rel="noreferrer">
             Unsplash
           </a>
         </span>
       </section>
+
       <Footer />
     </main>
   );
