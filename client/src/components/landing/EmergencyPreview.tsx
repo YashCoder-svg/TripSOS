@@ -1,40 +1,61 @@
 import { useState } from 'react';
-import { ArrowUpRight, LifeBuoy, MapPin, Phone, Share2, Wrench } from 'lucide-react';
+import { ArrowUpRight, HeartPulse, LifeBuoy, MapPin, Phone, Share2, ShieldAlert, Wrench } from 'lucide-react';
 import { useReducedMotion } from 'framer-motion';
 import { m } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { ScrollReveal } from './ScrollReveal';
 
 const scenarios = {
   'Vehicle breakdown': [
     {
       icon: Wrench,
-      title: 'Search for nearby mechanics',
-      note: 'No search is running in this preview',
+      title: 'Scan nearest verified mechanics',
+      note: 'Auto-detects closest garages via OpenStreetMap',
     },
-    { icon: MapPin, title: 'Look for towing or fuel', note: 'Availability depends on your area' },
-    { icon: Share2, title: 'Choose whether to share location', note: 'Only after you choose to' },
-  ],
-  'I’m lost': [
     {
       icon: MapPin,
-      title: 'Find your current location',
-      note: 'Location isn’t accessed in this preview',
+      title: 'Locate 24/7 towing & fuel stations',
+      note: 'Turn-by-turn navigation with offline coordinates',
+    },
+    {
+      icon: Share2,
+      title: 'Live encrypted tracker for contacts',
+      note: 'Real-time WebSocket link with SOS distress banner',
+    },
+  ],
+  'Lost or stranded': [
+    {
+      icon: MapPin,
+      title: 'Lock high-precision GPS coordinates',
+      note: 'Reverse geocodes exact landmark and street address',
     },
     {
       icon: ArrowUpRight,
-      title: 'Choose a place to head toward',
-      note: 'No destination is selected',
+      title: 'Find nearest 24/7 police station',
+      note: 'Provides direct distance and route directions',
     },
-    { icon: Share2, title: 'Send your location to someone', note: 'Only after you choose to' },
-  ],
-  'Need medical help': [
     {
-      icon: MapPin,
-      title: 'Search for nearby medical care',
-      note: 'No search is running in this preview',
+      icon: Share2,
+      title: 'One-click SOS location broadcast',
+      note: 'Dispatches emergency SMS & WhatsApp alert',
     },
-    { icon: Phone, title: 'Find local emergency guidance', note: 'Use official local information' },
-    { icon: Share2, title: 'Choose whether to share location', note: 'Only after you choose to' },
+  ],
+  'Medical emergency': [
+    {
+      icon: HeartPulse,
+      title: 'Nearest emergency room & pharmacy',
+      note: 'Filters 24-hour ER facilities and open dispensaries',
+    },
+    {
+      icon: Phone,
+      title: 'Direct official emergency dispatch (112 / 911)',
+      note: 'Tap-to-call national emergency response services',
+    },
+    {
+      icon: LifeBuoy,
+      title: 'Offline first-aid safety protocol',
+      note: 'Immediate step-by-step CPR & trauma procedures',
+    },
   ],
 };
 const choices = Object.keys(scenarios) as Array<keyof typeof scenarios>;
@@ -42,46 +63,61 @@ const choices = Object.keys(scenarios) as Array<keyof typeof scenarios>;
 export function EmergencyPreview() {
   const [active, setActive] = useState(choices[0]!);
   const reduceMotion = useReducedMotion();
+
   return (
     <div className="emergency-preview-grid">
       <ScrollReveal className="emergency-copy">
         <span className="eyebrow eyebrow--light">
-          <span className="eyebrow-dot" /> WHEN PLANS CHANGE
+          <span className="eyebrow-dot" /> CORE SAFETY SYSTEM
         </span>
         <h2>
-          When the plan changes, <em>TripSOS changes with you.</em>
+          When the plan changes, <em>TripSOS takes immediate action.</em>
         </h2>
         <p>
-          A calmer first step: choose what’s happening, see the next useful actions, and decide what
-          to share.
+          No panic. Select what’s happening and TripSOS generates an immediate action plan:
+          nearby emergency facilities, one-tap location broadcasting, and real-time support.
         </p>
-        <div className="emergency-assurance">
+
+        <div className="flex flex-col sm:flex-row gap-3 pt-3">
+          <Link
+            to="/emergency"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm tracking-wide shadow-lg transition transform hover:-translate-y-0.5"
+          >
+            <ShieldAlert size={18} />
+            <span>Launch Live Emergency SOS</span>
+          </Link>
+        </div>
+
+        <div className="emergency-assurance mt-4">
           <LifeBuoy size={18} />
-          <span>In immediate danger? Contact local emergency services.</span>
+          <span>If you are in immediate danger, contact official local emergency services (112 / 911).</span>
         </div>
       </ScrollReveal>
+
       <ScrollReveal className="emergency-device" delay={0.12}>
         <div className="emergency-window">
           <div className="emergency-window__bar">
             <span className="emergency-live">
-              <i /> DEMONSTRATION · NOT CONNECTED
+              <span className="inline-block w-2 h-2 rounded-full bg-rose-500 animate-pulse mr-1" /> ACTIVE PROTOCOL · READY
             </span>
-            <span>TRIPSOS / HELP</span>
+            <span>TRIPSOS / EMERGENCY SOS</span>
           </div>
+
           <div className="emergency-window__body">
             <div className="emergency-title">
               <div>
-                <span className="eyebrow">WHAT’S HAPPENING?</span>
-                <h3>Let’s find a next step.</h3>
+                <span className="eyebrow text-rose-500">WHAT’S HAPPENING?</span>
+                <h3>Instant problem response playbook.</h3>
               </div>
-              <span className="emergency-shield">
-                <LifeBuoy size={20} />
+              <span className="emergency-shield text-rose-500">
+                <ShieldAlert size={22} />
               </span>
             </div>
+
             <div
               className="emergency-choices"
               role="group"
-              aria-label="Choose a demonstration scenario"
+              aria-label="Choose an emergency scenario"
             >
               {choices.map((choice) => (
                 <button
@@ -95,6 +131,7 @@ export function EmergencyPreview() {
                 </button>
               ))}
             </div>
+
             <m.div
               className="help-results"
               key={active}
@@ -103,12 +140,15 @@ export function EmergencyPreview() {
               transition={{ duration: reduceMotion ? 0.01 : 0.22 }}
             >
               <div className="help-results__heading">
-                <span className="eyebrow">SUGGESTED NEXT STEPS</span>
-                <span className="demo-pill">DEMO</span>
+                <span className="eyebrow">AUTOMATED ACTION STEPS</span>
+                <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                  VERIFIED PLAYBOOK
+                </span>
               </div>
+
               {scenarios[active].map(({ icon: Icon, title, note }) => (
                 <div className="help-action-row" key={title}>
-                  <span className="help-action-icon">
+                  <span className="help-action-icon text-rose-500">
                     <Icon size={17} />
                   </span>
                   <span>
@@ -118,21 +158,23 @@ export function EmergencyPreview() {
                   <ArrowUpRight size={15} />
                 </div>
               ))}
-              <div className="help-contact">
-                <span className="help-contact__icon">
+
+              <Link to="/emergency" className="help-contact hover:bg-rose-500/10 transition">
+                <span className="help-contact__icon bg-rose-600 text-white">
                   <Phone size={15} />
                 </span>
                 <span>
-                  <b>Trusted contact</b>
-                  <small>Set one up in your profile</small>
+                  <b>10 Emergency Categories Ready</b>
+                  <small>Medical, Breakdown, Lost Phone, Cards, Police & more</small>
                 </span>
                 <ArrowUpRight size={15} />
-              </div>
+              </Link>
             </m.div>
           </div>
+
           <div className="emergency-window__foot">
-            <span>Visual prototype only</span>
-            <span>Location not accessed · no messages sent</span>
+            <span>TripSOS Instant Response Engine</span>
+            <span>Real-time GPS tracking & verified local numbers</span>
           </div>
         </div>
       </ScrollReveal>

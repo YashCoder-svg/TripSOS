@@ -2,11 +2,17 @@ import mongoose, { Schema, type InferSchemaType } from 'mongoose';
 
 export const emergencyCategories = [
   'medical',
+  'breakdown',
+  'lost_phone',
+  'lost_wallet',
+  'accommodation',
+  'missed_transit',
   'police',
-  'fire',
-  'accident',
+  'repair',
   'lost',
   'general',
+  'accident',
+  'fire',
 ] as const;
 
 export type EmergencyCategory = (typeof emergencyCategories)[number];

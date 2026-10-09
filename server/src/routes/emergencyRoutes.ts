@@ -300,3 +300,52 @@ emergencyRoutes.get('/share/:token', async (req, res, next) => {
     next(error);
   }
 });
+
+// PATCH /api/emergency/share/:token/location (Updates coordinates and broadcasts via WebSocket)
+emergencyRoutes.patch('/share/:token/location', async (req, res, next) => {
+  try {
+    const { token } = tokenParamSchema.parse(req.params);
+    const { latitude, longitude, accuracyMeters, address } = req.body;
+
+    if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+      throw new AppError(400, 'INVALID_COORDINATES', 'Latitude and longitude must be numbers.');
+    }
+
+    const share = await LocationShare.findOne({ token });
+    if (!share) {
+      throw new AppError(404, 'SHARE_NOT_FOUND', 'Emergency share link not found.');
+    }
+
+    if (share.revokedAt || new Date() > share.expiresAt) {
+      throw new AppError(410, 'SHARE_EXPIRED', 'This emergency share link has expired or was revoked.');
+    }
+
+    share.location = {
+      latitude,
+      longitude,
+      accuracyMeters: typeof accuracyMeters === 'number' ? accuracyMeters : share.location?.accuracyMeters,
+      address: typeof address === 'string' ? address : share.location?.address,
+    };
+    await share.save();
+
+    // Broadcast live update to socket room
+    const { getIO } = await import('../sockets/socketServer.js');
+    getIO()?.to(`emergency:${token}`).emit('emergency:location_update', {
+      latitude,
+      longitude,
+      accuracyMeters,
+      address,
+      timestamp: new Date().toISOString(),
+    });
+
+    res.json({
+      success: true,
+      data: {
+        updated: true,
+        location: share.location,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
