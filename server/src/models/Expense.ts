@@ -12,6 +12,12 @@ const participantSchema = new Schema(
       required: true,
       min: 0,
     },
+    percentage: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: null,
+    },
   },
   { _id: false },
 );
@@ -50,7 +56,17 @@ const expenseSchema = new Schema(
     category: {
       type: String,
       required: true,
-      enum: ['accommodation', 'food', 'transport', 'activities', 'shopping', 'medical', 'other'],
+      enum: [
+        'hotel',
+        'accommodation',
+        'food',
+        'transport',
+        'fuel',
+        'activities',
+        'shopping',
+        'medical',
+        'other',
+      ],
     },
     date: {
       type: String,
@@ -59,7 +75,7 @@ const expenseSchema = new Schema(
     splitMethod: {
       type: String,
       required: true,
-      enum: ['equal', 'custom'],
+      enum: ['equal', 'percentage', 'custom'],
       default: 'equal',
     },
     participants: {

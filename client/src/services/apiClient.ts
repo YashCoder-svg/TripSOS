@@ -27,6 +27,10 @@ export function setAccessToken(token: string | null): void {
   accessToken = token;
 }
 
+export function getAccessToken(): string | null {
+  return accessToken;
+}
+
 function notifySessionExpired(): void {
   setAccessToken(null);
   if (typeof window !== 'undefined') window.dispatchEvent(new Event(sessionExpiredEvent));

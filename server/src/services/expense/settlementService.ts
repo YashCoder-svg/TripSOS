@@ -10,7 +10,7 @@ export interface SettlementExpenseItem {
   exchangeRate?: number;
   convertedAmount?: number | null;
   paidBy: string; // userId string
-  splitMethod: 'equal' | 'custom';
+  splitMethod: 'equal' | 'percentage' | 'custom';
   participants: Array<{
     user: string; // userId string
     shareAmount: number;

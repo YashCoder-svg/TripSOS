@@ -1,5 +1,13 @@
 export type ExpenseCategory =
-  'accommodation' | 'food' | 'transport' | 'activities' | 'shopping' | 'medical' | 'other';
+  | 'hotel'
+  | 'accommodation'
+  | 'food'
+  | 'transport'
+  | 'fuel'
+  | 'activities'
+  | 'shopping'
+  | 'medical'
+  | 'other';
 
 export type ExpenseCurrency = 'INR' | 'USD' | 'EUR' | 'GBP';
 
@@ -11,6 +19,7 @@ export interface ExpenseParticipant {
     profilePhoto?: string;
   };
   shareAmount: number;
+  percentage?: number | null;
 }
 
 export interface Expense {
@@ -27,7 +36,7 @@ export interface Expense {
   description: string;
   category: ExpenseCategory;
   date: string;
-  splitMethod: 'equal' | 'custom';
+  splitMethod: 'equal' | 'percentage' | 'custom';
   participants: ExpenseParticipant[];
   notes?: string;
   exchangeRate?: number;
@@ -71,7 +80,7 @@ export interface CreateExpensePayload {
   description: string;
   category: ExpenseCategory;
   date: string;
-  splitMethod?: 'equal' | 'custom';
-  participants?: Array<{ user: string; shareAmount?: number }>;
+  splitMethod?: 'equal' | 'percentage' | 'custom';
+  participants?: Array<{ user: string; shareAmount?: number; percentage?: number }>;
   notes?: string;
 }

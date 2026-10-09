@@ -20,9 +20,11 @@ export interface ExpenseWorkspaceProps {
 }
 
 const CATEGORY_LABELS: Record<ExpenseCategory, string> = {
+  hotel: 'Hotel & Lodging',
   accommodation: 'Accommodation',
   food: 'Food & Dining',
   transport: 'Transport',
+  fuel: 'Fuel & Petrol',
   activities: 'Activities & Tours',
   shopping: 'Shopping',
   medical: 'Medical & Health',
@@ -47,7 +49,8 @@ export function ExpenseWorkspace({ trip }: ExpenseWorkspaceProps) {
   const [currency, setCurrency] = useState<ExpenseCurrency>(trip.currency as ExpenseCurrency);
   const [category, setCategory] = useState<ExpenseCategory>('food');
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]!);
-  const [splitMethod, setSplitMethod] = useState<'equal' | 'custom'>('equal');
+  const [splitMethod, setSplitMethod] = useState<'equal' | 'percentage' | 'custom'>('equal');
+  const [memberPercentages, setMemberPercentages] = useState<Record<string, number>>({});
   const [notes, setNotes] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -74,6 +77,24 @@ export function ExpenseWorkspace({ trip }: ExpenseWorkspaceProps) {
       return;
     }
 
+    let participants = undefined;
+    if (splitMethod === 'percentage') {
+      const targetMembers =
+        activeMembers.length > 0 ? activeMembers : [{ user: { _id: currentUserId || '' } }];
+      const totalPct = targetMembers.reduce(
+        (acc, m) => acc + (memberPercentages[m.user?._id || ''] || 0),
+        0,
+      );
+      if (Math.abs(totalPct - 100) > 0.5) {
+        setFormError(`Percentages must add up to 100% (currently ${totalPct}%).`);
+        return;
+      }
+      participants = targetMembers.map((m) => ({
+        user: m.user?._id || '',
+        percentage: memberPercentages[m.user?._id || ''] || 0,
+      }));
+    }
+
     try {
       const payload: CreateExpensePayload = {
         description: description.trim(),
@@ -82,6 +103,7 @@ export function ExpenseWorkspace({ trip }: ExpenseWorkspaceProps) {
         category,
         date,
         splitMethod,
+        participants,
         notes: notes.trim(),
       };
 
@@ -90,6 +112,7 @@ export function ExpenseWorkspace({ trip }: ExpenseWorkspaceProps) {
       setDescription('');
       setAmount('');
       setNotes('');
+      setMemberPercentages({});
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Failed to record expense.');
     }
@@ -408,14 +431,54 @@ export function ExpenseWorkspace({ trip }: ExpenseWorkspaceProps) {
                 Split Method
                 <select
                   value={splitMethod}
-                  onChange={(e) => setSplitMethod(e.target.value as 'equal' | 'custom')}
+                  onChange={(e) => setSplitMethod(e.target.value as 'equal' | 'percentage' | 'custom')}
                   className="form-input"
                 >
                   <option value="equal">
                     Equal Split (across all {activeMembers.length || 1} trip members)
                   </option>
+                  <option value="percentage">
+                    Percentage Split (% by traveler)
+                  </option>
                 </select>
               </label>
+
+              {splitMethod === 'percentage' && (
+                <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-3 space-y-2">
+                  <div className="flex items-center justify-between text-xs text-slate-300 font-semibold mb-1">
+                    <span>Traveler Share (%)</span>
+                    <span className="text-emerald-400 font-mono">
+                      Total: {Object.values(memberPercentages).reduce((a, b) => a + b, 0)}% / 100%
+                    </span>
+                  </div>
+                  {(activeMembers.length > 0 ? activeMembers : [{ _id: 'self', user: { _id: currentUserId, name: 'You' } }]).map((m) => {
+                    const uId = m.user?._id || '';
+                    const uName = m.user?.name || 'Traveler';
+                    return (
+                      <div key={m._id} className="flex items-center justify-between gap-3 text-xs">
+                        <span className="text-slate-300 truncate max-w-[150px]">{uName}</span>
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={memberPercentages[uId] ?? ''}
+                            onChange={(e) =>
+                              setMemberPercentages((prev) => ({
+                                ...prev,
+                                [uId]: parseFloat(e.target.value) || 0,
+                              }))
+                            }
+                            placeholder="0"
+                            className="w-16 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-right text-slate-100"
+                          />
+                          <span className="text-slate-500">%</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
               <label className="form-label">
                 Notes (Optional)

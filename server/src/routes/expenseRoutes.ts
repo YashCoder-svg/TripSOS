@@ -138,6 +138,16 @@ expenseRoutes.post('/', async (req, res, next) => {
         user: u,
         shareAmount: share,
       }));
+    } else if (input.splitMethod === 'percentage') {
+      const totalPct = participants.reduce((sum, p) => sum + (p.percentage ?? 0), 0);
+      if (Math.abs(totalPct - 100) > 0.5) {
+        throw new AppError(400, 'INVALID_PERCENTAGE', 'Participant percentages must add up to 100%.');
+      }
+      participants = participants.map((p) => ({
+        user: p.user,
+        shareAmount: Number(((input.amount * (p.percentage ?? 0)) / 100).toFixed(2)),
+        percentage: p.percentage,
+      }));
     } else if (input.splitMethod === 'equal') {
       const share = Number((input.amount / participants.length).toFixed(2));
       participants = participants.map((p) => ({
@@ -158,6 +168,7 @@ expenseRoutes.post('/', async (req, res, next) => {
       participants: participants.map((p) => ({
         user: new mongoose.Types.ObjectId(p.user),
         shareAmount: p.shareAmount ?? 0,
+        percentage: p.percentage ?? null,
       })),
       notes: input.notes,
       exchangeRate,
