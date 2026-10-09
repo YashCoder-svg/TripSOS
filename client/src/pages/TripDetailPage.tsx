@@ -6,6 +6,7 @@ import {
   Check,
   Compass,
   Edit3,
+  Hash,
   MapPinned,
   Sparkles,
   Users,
@@ -333,6 +334,11 @@ export function TripDetailPage() {
               {trip.travelerCount} {trip.travelerCount === 1 ? 'traveler' : 'travelers'}
             </p>
             <span className={`trip-status trip-status--${trip.status}`}>{trip.status}</span>
+            {trip.tripCode && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                <Hash size={12} /> {trip.tripCode}
+              </span>
+            )}
           </div>
           <div className="trip-hero-actions">
             <Link to={`/trips/${trip._id}/edit`}>

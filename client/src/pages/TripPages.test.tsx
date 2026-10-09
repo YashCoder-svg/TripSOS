@@ -29,6 +29,7 @@ vi.mock('../services/tripService', () => ({
   useCreateTrip: () => ({ mutateAsync: vi.fn() }),
   useUpdateTrip: () => ({ mutateAsync: hooks.updateMutateAsync }),
   useUpdateTripStatus: () => ({ mutateAsync: hooks.updateStatusMutateAsync, isPending: false }),
+  useJoinTripByCode: () => ({ mutateAsync: vi.fn(), isPending: false }),
 }));
 
 vi.mock('../services/expenseService', () => ({
@@ -60,6 +61,19 @@ vi.mock('../services/groupService', () => ({
   useJoinTrip: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useRemoveTripMember: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useLeaveTrip: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useTripMessages: () => ({ data: [], isLoading: false }),
+  useSendTripMessage: () => ({ mutate: vi.fn(), isPending: false }),
+  usePinTripMessage: () => ({ mutate: vi.fn(), isPending: false }),
+}));
+
+vi.mock('../services/socketService', () => ({
+  getSocket: () => ({
+    emit: vi.fn(),
+    on: vi.fn(),
+    off: vi.fn(),
+    disconnect: vi.fn(),
+  }),
+  disconnectSocket: vi.fn(),
 }));
 
 const trip: Trip = {

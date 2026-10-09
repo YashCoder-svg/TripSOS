@@ -1,6 +1,7 @@
-import { ArrowRight, CalendarDays, Compass, MapPlus, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useTrips } from '../services/tripService';
+import { useState } from 'react';
+import { ArrowRight, CalendarDays, Compass, Hash, KeyRound, MapPlus, Users, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useJoinTripByCode, useTrips } from '../services/tripService';
 import type { Trip, TripStatus } from '../types/trip';
 import { formatBudget, formatDateRange, tripDuration } from './tripUtils';
 
@@ -16,7 +17,14 @@ function TripCard({ trip }: { trip: Trip }) {
   return (
     <article className="trip-list-card">
       <div className="trip-list-card__topline">
-        <span className={`trip-status trip-status--${trip.status}`}>{trip.status}</span>
+        <div className="flex items-center gap-2">
+          <span className={`trip-status trip-status--${trip.status}`}>{trip.status}</span>
+          {trip.tripCode && (
+            <span className="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              {trip.tripCode}
+            </span>
+          )}
+        </div>
         <span>{tripDuration(trip.startDate, trip.endDate)} days</span>
       </div>
       <div className="trip-list-card__body">
@@ -60,6 +68,27 @@ function TripCard({ trip }: { trip: Trip }) {
 
 export function TripsPage() {
   const { data: trips = [], isLoading, isError } = useTrips();
+  const joinByCodeMutation = useJoinTripByCode();
+  const navigate = useNavigate();
+
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [tripCodeInput, setTripCodeInput] = useState('');
+  const [joinError, setJoinError] = useState<string | null>(null);
+
+  const handleJoinTrip = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setJoinError(null);
+    if (!tripCodeInput.trim()) return;
+
+    try {
+      const res = await joinByCodeMutation.mutateAsync(tripCodeInput.trim().toUpperCase());
+      setShowJoinModal(false);
+      navigate(`/trips/${res.trip._id}`);
+    } catch (err) {
+      setJoinError(err instanceof Error ? err.message : 'Invalid or expired trip code.');
+    }
+  };
+
   return (
     <main className="product-page trips-page">
       <div className="product-shell trips-shell">
@@ -72,11 +101,25 @@ export function TripsPage() {
               <h1>Every journey, in one place.</h1>
               <p>Make space for the details that make a trip yours.</p>
             </div>
-            <Link className="dashboard-primary-action" to="/trips/new">
-              <MapPlus size={17} /> Plan a trip
-            </Link>
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowJoinModal(true);
+                  setTripCodeInput('');
+                  setJoinError(null);
+                }}
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-semibold border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 transition"
+              >
+                <KeyRound size={15} /> Join with Code
+              </button>
+              <Link className="dashboard-primary-action" to="/trips/new">
+                <MapPlus size={17} /> Plan a trip
+              </Link>
+            </div>
           </div>
         </header>
+
         {isLoading ? (
           <p className="trip-query-state" role="status">
             Gathering your journeys…
@@ -96,9 +139,18 @@ export function TripsPage() {
             <span className="eyebrow">A FRESH PAGE</span>
             <h2>Your next adventure starts here.</h2>
             <p>Create a trip to keep its dates, destination, travelers, and budget together.</p>
-            <Link className="dashboard-primary-action" to="/trips/new">
-              <MapPlus size={17} /> Create your first trip
-            </Link>
+            <div className="flex items-center gap-3 mt-4">
+              <button
+                type="button"
+                onClick={() => setShowJoinModal(true)}
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-semibold border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+              >
+                <KeyRound size={15} /> Join with Code
+              </button>
+              <Link className="dashboard-primary-action" to="/trips/new">
+                <MapPlus size={17} /> Create your first trip
+              </Link>
+            </div>
           </section>
         ) : null}
         {!isLoading &&
@@ -130,6 +182,79 @@ export function TripsPage() {
             );
           })}
       </div>
+
+      {/* Join Trip by Code Modal */}
+      {showJoinModal && (
+        <div
+          className="modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="join-code-title"
+        >
+          <div className="group-modal-card max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 text-slate-100">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 text-emerald-400">
+                <Hash size={20} />
+                <h3 id="join-code-title" className="text-lg font-bold text-slate-100">
+                  Join Group Trip
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowJoinModal(false)}
+                className="text-slate-400 hover:text-slate-200 p-1"
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-400 mb-5">
+              Enter the unique 8-character trip code shared by your trip organizer (e.g. <code>TRP-82K7</code>).
+            </p>
+
+            <form onSubmit={handleJoinTrip} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+                  Trip Code
+                </label>
+                <input
+                  type="text"
+                  required
+                  maxLength={10}
+                  value={tripCodeInput}
+                  onChange={(e) => setTripCodeInput(e.target.value.toUpperCase())}
+                  placeholder="TRP-82K7"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-center text-lg font-mono font-bold tracking-widest text-emerald-400 focus:outline-none focus:border-emerald-500 uppercase placeholder:text-slate-600"
+                />
+              </div>
+
+              {joinError && (
+                <p className="text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-lg p-2.5">
+                  {joinError}
+                </p>
+              )}
+
+              <div className="flex items-center justify-end gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowJoinModal(false)}
+                  className="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={joinByCodeMutation.isPending || !tripCodeInput.trim()}
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-slate-950 transition flex items-center gap-1.5"
+                >
+                  {joinByCodeMutation.isPending ? 'Joining…' : 'Join Trip'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

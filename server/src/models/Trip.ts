@@ -58,10 +58,16 @@ const tripSchema = new Schema(
       enum: ['planning', 'upcoming', 'active', 'completed', 'cancelled'],
       default: 'upcoming',
     },
+    tripCode: {
+      type: String,
+      uppercase: true,
+      trim: true,
+    },
   },
   { timestamps: true, versionKey: false },
 );
 
+tripSchema.index({ tripCode: 1 }, { unique: true, sparse: true });
 tripSchema.index({ owner: 1, startDate: 1 });
 tripSchema.index({ owner: 1, status: 1 });
 

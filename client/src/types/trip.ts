@@ -49,6 +49,7 @@ export type Trip = {
   travelStyle: TravelStyle;
   interests: TripInterest[];
   status: TripStatus;
+  tripCode?: string;
   createdAt: string;
   updatedAt: string;
 };

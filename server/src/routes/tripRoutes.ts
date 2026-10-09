@@ -11,14 +11,17 @@ import {
 import { itineraryRoutes } from './itineraryRoutes.js';
 import { memberRoutes } from './memberRoutes.js';
 import { expenseRoutes } from './expenseRoutes.js';
+import { messageRoutes } from './messageRoutes.js';
 import { TripMember } from '../models/TripMember.js';
 import { assertTripAccess } from './tripAuthHelper.js';
+import { generateTripCode } from '../utils/tripCode.js';
 
 export const tripRoutes = Router();
 tripRoutes.use(requireAuth);
 tripRoutes.use('/:tripId/itinerary', itineraryRoutes);
 tripRoutes.use('/:tripId/members', memberRoutes);
 tripRoutes.use('/:tripId/expenses', expenseRoutes);
+tripRoutes.use('/:tripId/messages', messageRoutes);
 
 function dateStatus(
   startDate: string,
@@ -54,7 +57,8 @@ function assertTripId(tripId: string): void {
 tripRoutes.post('/', async (req, res, next) => {
   try {
     const input = createTripSchema.parse(req.body);
-    const trip = await Trip.create({ ...input, owner: req.auth!.userId });
+    const tripCode = generateTripCode();
+    const trip = await Trip.create({ ...input, tripCode, owner: req.auth!.userId });
     await TripMember.create({
       trip: trip._id,
       user: req.auth!.userId,
@@ -63,6 +67,50 @@ tripRoutes.post('/', async (req, res, next) => {
       joinedAt: new Date(),
     });
     res.status(201).json({ success: true, data: { trip: serializeTrip(trip) } });
+  } catch (error) {
+    next(error);
+  }
+});
+
+tripRoutes.post('/join-code', async (req, res, next) => {
+  try {
+    const { code } = req.body;
+    if (!code || typeof code !== 'string') {
+      throw new AppError(400, 'INVALID_CODE', 'Enter a valid trip code (e.g. TRP-82K7).');
+    }
+
+    const cleanCode = code.trim().toUpperCase();
+    const trip = await Trip.findOne({ tripCode: cleanCode });
+    if (!trip) {
+      throw new AppError(404, 'TRIP_NOT_FOUND', 'No trip found matching this code.');
+    }
+
+    if (trip.owner.toString() === req.auth!.userId) {
+      return res.json({
+        success: true,
+        data: { trip: serializeTrip(trip), alreadyMember: true, role: 'owner' },
+      });
+    }
+
+    let member = await TripMember.findOne({ trip: trip._id, user: req.auth!.userId });
+    if (!member) {
+      member = await TripMember.create({
+        trip: trip._id,
+        user: req.auth!.userId,
+        role: 'member',
+        status: 'active',
+        joinedAt: new Date(),
+      });
+    } else if (member.status !== 'active') {
+      member.status = 'active';
+      member.joinedAt = new Date();
+      await member.save();
+    }
+
+    res.json({
+      success: true,
+      data: { trip: serializeTrip(trip), alreadyMember: false, role: member.role },
+    });
   } catch (error) {
     next(error);
   }

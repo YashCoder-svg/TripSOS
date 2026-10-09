@@ -27,6 +27,11 @@ export const tripService = {
     }).then((data) => data.trip),
   remove: (id: string) =>
     apiRequest<{ deleted: boolean }>(`/trips/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  joinByCode: (code: string) =>
+    apiRequest<{ trip: Trip; alreadyMember: boolean; role: string }>('/trips/join-code', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    }),
 };
 
 export function useTrips() {
@@ -81,6 +86,17 @@ export function useDeleteTrip() {
     mutationFn: tripService.remove,
     onSuccess: async (_result, id) => {
       queryClient.removeQueries({ queryKey: tripKeys.detail(id) });
+      await queryClient.invalidateQueries({ queryKey: tripKeys.all });
+    },
+  });
+}
+
+export function useJoinTripByCode() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (code: string) => tripService.joinByCode(code),
+    onSuccess: async (data) => {
+      queryClient.setQueryData(tripKeys.detail(data.trip._id), data.trip);
       await queryClient.invalidateQueries({ queryKey: tripKeys.all });
     },
   });

@@ -67,6 +67,27 @@ vi.mock('../../services/groupService', () => ({
     mutateAsync: vi.fn(),
     isPending: false,
   }),
+  useTripMessages: () => ({
+    data: [],
+    isLoading: false,
+  }),
+  useSendTripMessage: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
+  usePinTripMessage: () => ({
+    mutateAsync: vi.fn(),
+    isPending: false,
+  }),
+}));
+
+vi.mock('../../services/socketService', () => ({
+  getSocket: () => ({
+    emit: vi.fn(),
+    on: vi.fn(),
+    off: vi.fn(),
+  }),
+  disconnectSocket: vi.fn(),
 }));
 
 vi.mock('../../store/AuthProvider', () => ({
