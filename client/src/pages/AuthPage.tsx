@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, ShieldCheck, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -117,6 +117,7 @@ export function LoginPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginFields>({
     resolver: zodResolver(loginSchema),
@@ -162,6 +163,29 @@ export function LoginPage() {
               {(location.state as { sessionMessage: string }).sessionMessage}
             </p>
           )}
+
+          {/* Quick 1-Click Demo Evaluation */}
+          <div className="demo-credentials-card">
+            <div className="demo-credentials-top">
+              <span className="demo-badge">QUICK DEMO ACCESS</span>
+              <Sparkles size={14} className="text-emerald-700" aria-hidden="true" />
+            </div>
+            <p className="demo-desc">
+              Explore with pre-seeded trips, itineraries, budget trackers, and companions.
+            </p>
+            <button
+              type="button"
+              className="demo-fill-btn"
+              onClick={() => {
+                setValue('email', 'traveler@tripsos.org', { shouldValidate: true });
+                setValue('password', 'TripSOS2026!', { shouldValidate: true });
+              }}
+            >
+              <span>Fill Demo Credentials</span>
+              <code>traveler@tripsos.org</code>
+            </button>
+          </div>
+
           <form className="auth-form" onSubmit={onSubmit} noValidate>
             <div className="form-field">
               <label htmlFor="login-email">Email address</label>

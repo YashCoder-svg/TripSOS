@@ -307,17 +307,17 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
       </div>
 
       {/* Trip Code Card */}
-      <div className="bg-slate-900/60 border border-emerald-500/20 rounded-2xl p-4 sm:p-5 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white border border-[var(--line)] rounded-2xl p-4 sm:p-5 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-mono text-lg font-bold">
+          <div className="w-10 h-10 rounded-xl bg-[rgba(23,58,50,0.08)] border border-[rgba(23,58,50,0.15)] flex items-center justify-center text-[var(--forest)] font-mono text-lg font-bold">
             <Hash size={20} />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs uppercase tracking-wider text-slate-400 font-medium">Group Trip Code</span>
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-300">Instant Join</span>
+              <span className="text-xs uppercase tracking-wider text-[var(--muted)] font-semibold">Group Trip Code</span>
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[rgba(23,58,50,0.1)] text-[var(--forest)]">Instant Join</span>
             </div>
-            <p className="text-sm text-slate-300 mt-0.5 font-mono font-bold tracking-wider text-emerald-400 text-base">
+            <p className="text-base text-[var(--forest)] mt-0.5 font-mono font-bold tracking-wider">
               {tripCode}
             </p>
           </div>
@@ -326,48 +326,48 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
           <button
             type="button"
             onClick={handleCopyTripCode}
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--paper-light)] hover:bg-[var(--paper)] text-[var(--ink)] text-xs font-bold border border-[var(--line)] transition"
           >
-            {codeCopied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+            {codeCopied ? <Check size={14} className="text-[var(--forest)]" /> : <Copy size={14} />}
             {codeCopied ? 'Code Copied!' : 'Copy Trip Code'}
           </button>
         </div>
       </div>
 
       {/* Tabs Bar */}
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-3 mb-6">
+      <div className="flex items-center gap-2 border-b border-[var(--line)] pb-3 mb-6 flex-wrap">
         <button
           type="button"
           onClick={() => setActiveTab('members')}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
             activeTab === 'members'
-              ? 'bg-slate-800 text-emerald-400 border border-slate-700'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-[var(--forest)] text-white shadow-sm'
+              : 'text-[var(--muted)] hover:text-[var(--ink)] hover:bg-white'
           }`}
         >
-          <Users size={16} /> Travelers ({activeMembers.length})
+          <Users size={15} /> Travelers ({activeMembers.length})
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('chat')}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
             activeTab === 'chat'
-              ? 'bg-slate-800 text-emerald-400 border border-slate-700'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-[var(--forest)] text-white shadow-sm'
+              : 'text-[var(--muted)] hover:text-[var(--ink)] hover:bg-white'
           }`}
         >
-          <MessageSquare size={16} /> Trip Chat & Updates
+          <MessageSquare size={15} /> Trip Chat & Updates
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('location')}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
             activeTab === 'location'
-              ? 'bg-slate-800 text-emerald-400 border border-slate-700'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-[var(--forest)] text-white shadow-sm'
+              : 'text-[var(--muted)] hover:text-[var(--ink)] hover:bg-white'
           }`}
         >
-          <Navigation size={16} /> Live Buddies ({memberLocations.length})
+          <Navigation size={15} /> Live Buddies ({memberLocations.length})
         </button>
       </div>
 
@@ -464,11 +464,11 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
       )}
 
       {activeTab === 'chat' && (
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-6 flex flex-col h-[500px]">
+        <div className="bg-white border border-[var(--line)] rounded-2xl p-4 sm:p-6 flex flex-col h-[520px] shadow-sm">
           {/* Announcements Banner */}
           {messages.some((m) => m.pinned) && (
-            <div className="mb-4 bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-amber-200 text-xs">
-              <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider mb-1 text-amber-300">
+            <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-900 text-xs">
+              <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider mb-1 text-amber-800">
                 <Pin size={13} /> Pinned Announcement
               </div>
               {messages
@@ -484,8 +484,8 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
           {/* Messages Feed */}
           <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin">
             {messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-slate-500 text-sm">
-                <MessageSquare size={32} className="mb-2 opacity-50" />
+              <div className="h-full flex flex-col items-center justify-center text-[var(--muted)] text-sm">
+                <MessageSquare size={32} className="mb-2 opacity-40 text-[var(--forest)]" />
                 <p>No messages yet. Send a note or announcement to your companions!</p>
               </div>
             ) : (
@@ -497,28 +497,28 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
                     key={m._id}
                     className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
                   >
-                    <div className="flex items-center gap-1.5 mb-1 text-[11px] text-slate-400">
-                      <span className="font-semibold text-slate-300">{m.senderName}</span>
+                    <div className="flex items-center gap-1.5 mb-1 text-[11px] text-[var(--muted)]">
+                      <span className="font-semibold text-[var(--ink)]">{m.senderName}</span>
                       <span>·</span>
-                      {m.pinned && <Pin size={11} className="text-amber-400 ml-1 fill-amber-400" />}
+                      {m.pinned && <Pin size={11} className="text-amber-600 ml-1 fill-amber-600" />}
                       {isOwner && (
                         <button
                           type="button"
                           onClick={() => pinMessageMutation?.mutate(m._id)}
-                          className="opacity-50 hover:opacity-100 text-[10px] text-slate-400 hover:text-amber-400 cursor-pointer transition"
+                          className="opacity-60 hover:opacity-100 text-[10px] text-[var(--muted)] hover:text-amber-600 cursor-pointer transition"
                           title={m.pinned ? 'Unpin message' : 'Pin message'}
                         >
-                          <Pin size={11} className={m.pinned ? 'text-amber-400' : 'text-slate-400'} />
+                          <Pin size={11} className={m.pinned ? 'text-amber-600' : 'text-[var(--muted)]'} />
                         </button>
                       )}
                     </div>
                     <div
                       className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
                         isAlert
-                          ? 'bg-amber-950/40 border border-amber-600/40 text-amber-100'
+                          ? 'bg-amber-50 border border-amber-300 text-amber-950 font-medium'
                           : isMe
-                            ? 'bg-emerald-600 text-white rounded-br-none'
-                            : 'bg-slate-800 text-slate-200 rounded-bl-none border border-slate-700/60'
+                            ? 'bg-[var(--forest)] text-white rounded-br-none shadow-sm'
+                            : 'bg-[var(--paper-light)] text-[var(--ink)] rounded-bl-none border border-[var(--line)]'
                       }`}
                     >
                       <p className="whitespace-pre-wrap">{m.content}</p>
@@ -530,16 +530,16 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
           </div>
 
           {/* Message Input Box */}
-          <form onSubmit={handleSendMessage} className="mt-4 pt-3 border-t border-slate-800 flex flex-col gap-2">
+          <form onSubmit={handleSendMessage} className="mt-4 pt-3 border-t border-[var(--line)] flex flex-col gap-2">
             {isOwner && (
-              <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer self-start select-none">
+              <label className="flex items-center gap-2 text-xs text-[var(--muted)] cursor-pointer self-start select-none font-medium">
                 <input
                   type="checkbox"
                   checked={isAnnouncement}
                   onChange={(e) => setIsAnnouncement(e.target.checked)}
-                  className="rounded bg-slate-800 border-slate-700 text-amber-500 focus:ring-0"
+                  className="rounded border-[var(--line)] text-amber-600 focus:ring-0"
                 />
-                <Bell size={13} className="text-amber-400" /> Pin as official trip announcement
+                <Bell size={13} className="text-amber-600" /> Pin as official trip announcement
               </label>
             )}
             <div className="flex gap-2">
@@ -548,12 +548,12 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder={isAnnouncement ? 'Post an official trip announcement…' : 'Type a message to the group…'}
-                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="flex-1 bg-[var(--paper-light)] border border-[var(--line)] rounded-xl px-4 py-2.5 text-sm text-[var(--ink)] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--forest)]"
               />
               <button
                 type="submit"
                 disabled={!chatInput.trim()}
-                className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:hover:bg-emerald-500 text-slate-950 font-semibold rounded-xl text-sm flex items-center gap-1.5 transition"
+                className="px-5 py-2.5 bg-[var(--forest)] hover:bg-[#235449] disabled:opacity-40 text-white font-bold rounded-xl text-sm flex items-center gap-1.5 transition shadow-sm cursor-pointer"
               >
                 <Send size={15} /> Send
               </button>
@@ -563,54 +563,54 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
       )}
 
       {activeTab === 'location' && (
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+        <div className="bg-white border border-[var(--line)] rounded-2xl p-5 sm:p-6 space-y-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[var(--line)] pb-5">
             <div>
-              <h3 className="text-base font-semibold text-slate-100 flex items-center gap-2">
-                <Navigation size={18} className="text-emerald-400" /> Live Buddy Location Broadcast
+              <h3 className="text-base font-bold text-[var(--ink)] flex items-center gap-2">
+                <Navigation size={18} className="text-[var(--forest)]" /> Live Buddy Location Broadcast
               </h3>
-              <p className="text-xs text-slate-400 mt-1 max-w-xl">
-                Optionally broadcast your approximate coordinates to authorized companions in "{trip.name}" during outdoor excursions or crowded festivals. Location is transmitted only when toggled on and never saved permanently.
+              <p className="text-xs text-[var(--muted)] mt-1 max-w-xl line-height-relaxed">
+                Optionally broadcast your approximate coordinates to authorized companions in "{trip.name}" during outdoor excursions or crowded festivals. Coordinates are transmitted only while toggled on and never saved permanently.
               </p>
             </div>
             <button
               type="button"
               onClick={() => setIsSharingLocation(!isSharingLocation)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition ${
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition cursor-pointer ${
                 isSharingLocation
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30'
-                  : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950'
+                  ? 'bg-rose-50 text-rose-700 border border-rose-300 hover:bg-rose-100'
+                  : 'bg-[var(--forest)] hover:bg-[#235449] text-white shadow-sm'
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${isSharingLocation ? 'bg-rose-400 animate-pulse' : 'bg-slate-950'}`} />
+              <span className={`w-2 h-2 rounded-full ${isSharingLocation ? 'bg-rose-500 animate-pulse' : 'bg-emerald-300'}`} />
               {isSharingLocation ? 'Stop Broadcasting Location' : 'Start Sharing with Group'}
             </button>
           </div>
 
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--muted)] mb-3">
               Active Companions Sharing ({memberLocations.length})
             </h4>
             {memberLocations.length === 0 ? (
-              <div className="p-8 text-center bg-slate-950/40 rounded-xl border border-slate-800/60 text-slate-500 text-sm">
-                <MapPin size={28} className="mx-auto mb-2 opacity-50" />
-                <p>No companions currently broadcasting live coordinates.</p>
-                <p className="text-xs text-slate-600 mt-1">When buddies turn on sharing, their live position pins will appear here in real time.</p>
+              <div className="p-8 text-center bg-[var(--paper-light)] rounded-xl border border-[var(--line)] text-[var(--muted)] text-sm">
+                <MapPin size={28} className="mx-auto mb-2 opacity-40 text-[var(--forest)]" />
+                <p className="font-semibold text-[var(--ink)]">No companions currently broadcasting live coordinates.</p>
+                <p className="text-xs text-[var(--muted)] mt-1">When buddies turn on sharing, their live position pins will appear here in real time.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {memberLocations.map((m) => (
                   <div
                     key={m.userId}
-                    className="p-3.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between"
+                    className="p-3.5 bg-[var(--paper-light)] rounded-xl border border-[var(--line)] flex items-center justify-between shadow-2xs"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">
+                      <div className="w-9 h-9 rounded-lg bg-[rgba(23,58,50,0.1)] text-[var(--forest)] font-bold flex items-center justify-center text-xs">
                         {m.userName.slice(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <div className="text-sm font-semibold text-slate-200">{m.userName}</div>
-                        <div className="text-[11px] text-slate-400 font-mono">
+                        <div className="text-sm font-bold text-[var(--ink)]">{m.userName}</div>
+                        <div className="text-[11px] text-[var(--muted)] font-mono">
                           {m.latitude.toFixed(4)}, {m.longitude.toFixed(4)}
                         </div>
                       </div>
@@ -619,7 +619,7 @@ export function GroupWorkspace({ trip }: GroupWorkspaceProps) {
                       href={`https://www.google.com/maps?q=${m.latitude},${m.longitude}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] text-emerald-400 font-medium"
+                      className="px-3 py-1.5 rounded-lg bg-white hover:bg-[var(--paper)] text-[11px] text-[var(--forest)] font-bold border border-[var(--line)] shadow-2xs"
                     >
                       Locate
                     </a>

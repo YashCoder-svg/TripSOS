@@ -169,18 +169,18 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-slate-950/80 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-[#0a1613]/75 backdrop-blur-md"
       role="dialog"
       aria-modal="true"
       aria-label="TripSOS Global Search"
     >
       <div
-        className="w-full max-w-xl bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+        className="w-full max-w-xl bg-[#142b24] border border-[#264b40] rounded-2xl shadow-2xl overflow-hidden flex flex-col text-[#e2ece7]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input Bar */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-800 bg-slate-950/60">
-          <Search size={18} className="text-slate-400" />
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[#214137] bg-[#0e211b]">
+          <Search size={18} className="text-[#84a397]" />
           <input
             ref={inputRef}
             type="text"
@@ -191,25 +191,25 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
             }}
             onKeyDown={handleKeyNavigation}
             placeholder="Search destination, hospital, food, repair, or trip… (Press Esc to close)"
-            className="flex-1 bg-transparent text-slate-100 placeholder:text-slate-500 text-sm focus:outline-none"
+            className="flex-1 bg-transparent text-white placeholder:text-[#6f8b80] text-sm focus:outline-none"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery('')}
-              className="text-slate-500 hover:text-slate-300 p-1"
+              className="text-[#84a397] hover:text-white p-1"
             >
               <X size={15} />
             </button>
           )}
-          <span className="hidden sm:inline-block text-[11px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700">
+          <span className="hidden sm:inline-block text-[11px] font-mono text-[#84a397] bg-[#1a382f] px-1.5 py-0.5 rounded border border-[#2b5447]">
             ESC
           </span>
         </div>
 
         {/* Results List */}
         <div className="max-h-80 overflow-y-auto p-2 space-y-1">
-          <div className="px-3 py-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+          <div className="px-3 py-1.5 text-[11px] font-semibold text-[#84a397] uppercase tracking-wider">
             {query.trim() ? 'Matching Results' : 'Suggested Inquiries'}
           </div>
 
@@ -224,23 +224,23 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
                 onMouseEnter={() => setSelectedIndex(index)}
                 className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-left text-sm transition ${
                   isSelected
-                    ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30'
-                    : 'text-slate-200 hover:bg-slate-800/60 border border-transparent'
+                    ? 'bg-[#1e4438] text-white border border-[#3e7e6a]'
+                    : 'text-[#cfe0d8] hover:bg-[#18362d] border border-transparent'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                       isSelected
-                        ? 'bg-emerald-500/20 text-emerald-400'
-                        : 'bg-slate-800 text-slate-400'
+                        ? 'bg-emerald-400 text-[#0e211b]'
+                        : 'bg-[#1b3d32] text-[#84a397]'
                     }`}
                   >
                     <Icon size={16} />
                   </div>
-                  <span className="font-medium text-slate-100">{item.title}</span>
+                  <span className="font-medium text-white">{item.title}</span>
                 </div>
-                <span className="text-[11px] text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded">
+                <span className="text-[11px] text-[#84a397] bg-[#0e211b] px-2 py-0.5 rounded border border-[#214137]">
                   {item.category}
                 </span>
               </button>
@@ -249,18 +249,18 @@ export function GlobalSearchModal({ isOpen, onClose }: GlobalSearchModalProps) {
         </div>
 
         {/* Footer shortcuts info */}
-        <div className="px-4 py-2.5 bg-slate-950/80 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+        <div className="px-4 py-2.5 bg-[#0e211b] border-t border-[#214137] flex items-center justify-between text-[11px] text-[#84a397]">
           <div className="flex items-center gap-2">
             <span>
-              Use <kbd className="px-1 py-0.5 rounded bg-slate-800 font-mono">↑</kbd>{' '}
-              <kbd className="px-1 py-0.5 rounded bg-slate-800 font-mono">↓</kbd> to navigate
+              Use <kbd className="px-1 py-0.5 rounded bg-[#1a382f] border border-[#2b5447] font-mono">↑</kbd>{' '}
+              <kbd className="px-1 py-0.5 rounded bg-[#1a382f] border border-[#2b5447] font-mono">↓</kbd> to navigate
             </span>
             <span>·</span>
             <span>
-              <kbd className="px-1 py-0.5 rounded bg-slate-800 font-mono">Enter</kbd> to select
+              <kbd className="px-1 py-0.5 rounded bg-[#1a382f] border border-[#2b5447] font-mono">Enter</kbd> to select
             </span>
           </div>
-          <div className="flex items-center gap-1.5 text-emerald-400">
+          <div className="flex items-center gap-1.5 text-emerald-300">
             <Sparkles size={12} />
             <span>TripSOS Fast Search</span>
           </div>

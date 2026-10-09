@@ -7,24 +7,24 @@ import type { Trip } from '../../types/trip';
 import { DestinationAutocomplete } from '../places/DestinationAutocomplete';
 
 const styles = [
-  ['budget', 'Budget-minded'],
-  ['balanced', 'Balanced'],
-  ['comfort', 'Comfort'],
-  ['adventure', 'Adventure'],
-  ['family', 'Family'],
-  ['backpacking', 'Backpacking'],
+  { id: 'budget', label: 'Budget-minded', icon: '🎒', desc: 'Smart savings, hostels & transit' },
+  { id: 'balanced', label: 'Balanced', icon: '⚖️', desc: 'Comfortable standard blend' },
+  { id: 'comfort', label: 'Comfort', icon: '🛋️', desc: 'Upscale stays & private cabs' },
+  { id: 'adventure', label: 'Adventure', icon: '🧗', desc: 'Trails, treks & expeditions' },
+  { id: 'family', label: 'Family', icon: '👨‍👩‍👧', desc: 'Relaxed pacing & kid-friendly' },
+  { id: 'backpacking', label: 'Backpacking', icon: '🧭', desc: 'Off-the-beaten-path freedom' },
 ] as const;
 
 const interests = [
-  ['nature', 'Nature'],
-  ['food', 'Food'],
-  ['adventure', 'Adventure'],
-  ['history', 'History'],
-  ['shopping', 'Shopping'],
-  ['photography', 'Photography'],
-  ['nightlife', 'Nightlife'],
-  ['family', 'Family'],
-  ['culture', 'Culture'],
+  { id: 'nature', label: 'Nature', icon: '🌲' },
+  { id: 'food', label: 'Food', icon: '🍲' },
+  { id: 'adventure', label: 'Adventure', icon: '🧗' },
+  { id: 'history', label: 'History', icon: '🏛️' },
+  { id: 'shopping', label: 'Shopping', icon: '🛍️' },
+  { id: 'photography', label: 'Photography', icon: '📸' },
+  { id: 'nightlife', label: 'Nightlife', icon: '🍸' },
+  { id: 'family', label: 'Family', icon: '🎡' },
+  { id: 'culture', label: 'Culture', icon: '🎭' },
 ] as const;
 
 export function TripForm({
@@ -78,6 +78,7 @@ export function TripForm({
   });
 
   const destinationName = watch('destinationName') ?? '';
+  const currentTravelStyle = watch('travelStyle') ?? 'balanced';
 
   useEffect(() => {
     if (trip) {
@@ -227,28 +228,76 @@ export function TripForm({
             </span>
           )}
         </div>
+
+        {/* Thematic Travel Style Section */}
         <div className="form-field trip-form-grid__wide">
-          <label htmlFor="trip-style">Travel style</label>
-          <select id="trip-style" {...register('travelStyle')}>
-            {styles.map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
+          <div className="travel-style-label-row">
+            <label htmlFor="trip-style">Travel style</label>
+            <span className="travel-style-subtitle">Select the rhythm and tempo for this journey</span>
+          </div>
+
+          <div className="trip-style-cards-grid" role="radiogroup" aria-label="Travel styles">
+            {styles.map((item) => {
+              const isSelected = currentTravelStyle === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={isSelected}
+                  className={`trip-style-card ${isSelected ? 'is-selected' : ''}`}
+                  onClick={() => setValue('travelStyle', item.id, { shouldValidate: true })}
+                >
+                  <span className="style-card-icon" aria-hidden="true">{item.icon}</span>
+                  <div className="style-card-copy">
+                    <span className="style-card-name">{item.label}</span>
+                    <span className="style-card-desc">{item.desc}</span>
+                  </div>
+                  {isSelected && (
+                    <span className="style-card-badge" aria-hidden="true">
+                      <Check size={12} />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Accessible Native Select for Form & Automated Test Parity */}
+          <select
+            id="trip-style"
+            className="trip-style-native-select"
+            {...register('travelStyle')}
+            aria-label="Travel style"
+          >
+            {styles.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.label}
               </option>
             ))}
           </select>
         </div>
       </div>
+
+      {/* Interests Fieldset */}
       <fieldset className="trip-interest-fieldset">
         <legend>
-          What are you interested in? <span>Optional</span>
+          What are you interested in experiencing? <span>Optional — pick up to 9</span>
         </legend>
         <div className="trip-interest-options">
-          {interests.map(([value, label]) => (
-            <label className="trip-interest-chip" key={value}>
-              <input type="checkbox" value={value} {...register('interests')} />
-              <span>
-                <Check size={13} aria-hidden="true" />
-                {label}
+          {interests.map((item) => (
+            <label className="trip-interest-chip" key={item.id} htmlFor={`interest-${item.id}`}>
+              <input
+                id={`interest-${item.id}`}
+                type="checkbox"
+                value={item.id}
+                aria-label={item.label}
+                {...register('interests')}
+              />
+              <span className="trip-interest-chip-inner">
+                <span className="interest-chip-icon" aria-hidden="true">{item.icon}</span>
+                <span className="interest-chip-label">{item.label}</span>
+                <Check size={12} className="interest-chip-check" aria-hidden="true" />
               </span>
             </label>
           ))}
@@ -257,6 +306,7 @@ export function TripForm({
           <span className="form-field__error">Choose up to nine interests.</span>
         )}
       </fieldset>
+
       <p className="trip-date-note">
         Dates stay as local calendar days, with both the start and end dates counted in your trip
         length.
